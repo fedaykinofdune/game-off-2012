@@ -8,3 +8,4 @@ Build obstacles and fend off diamond-hungry geese.
     git clone https://github.com/mhluska/Feathers.git && cd Feathers 
     mkdir node_modules && npm install grunt-requirejs grunt-shell
     grunt
+    google-chrome demo-build.html
