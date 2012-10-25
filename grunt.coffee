@@ -6,8 +6,9 @@ module.exports = (grunt) ->
     grunt.initConfig
 
         shell:
-            setup:
-                command: 'ln -fs ../node_modules/grunt-requirejs/node_modules/requirejs/require.js lib/'
+            link:
+                command: 'ln -fs ../node_modules/grunt-requirejs/node_modules/requirejs/require.js lib/ && \ 
+                    ln -fs ../src/lib/threejs/build/three.js lib/'
             compile:
                 command: "coffee -c $(find src/js/ -name '*.coffee')"
 
@@ -27,6 +28,7 @@ module.exports = (grunt) ->
                 backbone  : '../vendor/backbone'
             ###
 
+            fileExclusionRegExp: /^threejs$/
             skipModuleInsertion: false
             optimizeAllPluginResources: true
             findNestedDependencies: true
