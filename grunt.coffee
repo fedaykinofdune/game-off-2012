@@ -8,6 +8,8 @@ module.exports = (grunt) ->
         shell:
             setup:
                 command: 'ln -fs ../node_modules/grunt-requirejs/node_modules/requirejs/require.js lib/'
+            compile:
+                command: "coffee -c $(find src/js/ -name '*.coffee')"
 
         requirejs:
             almond: true
