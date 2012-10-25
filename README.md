@@ -1,7 +1,7 @@
 Feathers
 ========
 
-#### 3D real-time strategy survival game #### 
+#### 3D real-time strategy survival game ####
 Build obstacles and fend off diamond-hungry geese.
 
 #### Usage ####
