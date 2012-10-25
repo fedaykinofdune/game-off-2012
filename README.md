@@ -1,5 +1,5 @@
-Feathers
-========
+Goose Rampage
+=============
 
 #### 3D real-time strategy survival game ####
 Build obstacles and fend off diamond-hungry geese.
