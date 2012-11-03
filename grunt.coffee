@@ -8,7 +8,8 @@ module.exports = (grunt) ->
         shell:
             link:
                 command: 'ln -fs ../node_modules/grunt-requirejs/node_modules/requirejs/require.js lib/ && \ 
-                    ln -fs ../src/lib/threejs/build/three.js lib/'
+                    ln -fs ../src/lib/threejs/build/three.js lib/ && \ 
+					ln -fs ../src/lib/tweenjs/build/Tween.js lib/tween.js'
             compile:
                 command: "coffee -c $(find src/js/ -name '*.coffee')"
 
@@ -21,12 +22,9 @@ module.exports = (grunt) ->
             baseUrl: 'js'
 
             paths: {}
-            ###
-            paths:
-                underscore: '../vendor/underscore'
-                jquery    : '../vendor/jquery'
-                backbone  : '../vendor/backbone'
-            ###
+            shim:
+                'lib/Three.js': 'exports': 'THREE'
+                'lib/Tween.js': 'exports': 'TWEEN'
 
             fileExclusionRegExp: /^threejs$/
             skipModuleInsertion: false
