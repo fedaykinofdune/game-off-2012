@@ -1,10 +1,12 @@
-requirejs [
-        'lib/three'
-        'lib/tween'
-        'unit'
-    ],
+'use strict'
 
-    (THREE, TWEEN, Unit) ->
+requirejs [
+
+    'lib/three'
+    'lib/tween'
+    'unit'
+
+], (THREE, TWEEN, Unit) ->
 
     class Game
 

@@ -1,9 +1,17 @@
 module.exports = (grunt) ->
 
+    grunt.loadNpmTasks 'grunt-coffeelint'
     grunt.loadNpmTasks 'grunt-requirejs'
     grunt.loadNpmTasks 'grunt-shell'
 
     grunt.initConfig
+
+        coffeelint:
+            app:
+                files: ['src/js/*.coffee']
+                options:
+                    indentation:
+                        value: 4
 
         shell:
             link:
@@ -32,4 +40,4 @@ module.exports = (grunt) ->
             preserveLicenseComments: false
             logLevel: 0
 
-    grunt.registerTask 'default', 'shell requirejs'
+    grunt.registerTask 'default', 'shell coffeelint requirejs'
