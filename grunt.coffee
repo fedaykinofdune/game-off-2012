@@ -7,9 +7,9 @@ module.exports = (grunt) ->
 
         shell:
             link:
-                command: 'ln -fs ../node_modules/grunt-requirejs/node_modules/requirejs/require.js lib/ && \ 
-                    ln -fs ../src/lib/threejs/build/three.js lib/ && \ 
-					ln -fs ../src/lib/tweenjs/build/Tween.js lib/tween.js'
+                command: 'ln -fs ../../../node_modules/grunt-requirejs/node_modules/requirejs/require.js src/js/lib/ && \ 
+                    ln -fs ../../../sub/threejs/build/three.js src/js/lib/ && \ 
+                    ln -fs ../../../sub/tweenjs/build/tween.min.js src/js/lib/tween.js'
             compile:
                 command: "coffee -c $(find src/js/ -name '*.coffee')"
 
@@ -23,13 +23,13 @@ module.exports = (grunt) ->
 
             paths: {}
             shim:
-                'lib/Three.js': 'exports': 'THREE'
-                'lib/Tween.js': 'exports': 'TWEEN'
+                'lib/three.js': 'exports': 'THREE'
+                'lib/tween.js': 'exports': 'TWEEN'
 
-            fileExclusionRegExp: /^threejs$/
             skipModuleInsertion: false
             optimizeAllPluginResources: true
             findNestedDependencies: true
             preserveLicenseComments: false
+            logLevel: 0
 
     grunt.registerTask 'default', 'shell requirejs'

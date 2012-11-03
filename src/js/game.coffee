@@ -1,13 +1,16 @@
 requirejs [
+        'lib/three'
+        'lib/tween'
         'unit'
     ],
 
-    (Unit) ->
+    (THREE, TWEEN, Unit) ->
 
     class Game
 
         constructor: ->
 
             console.log 'Game created! /tumbleweed'
+            console.log THREE
 
     new Game()

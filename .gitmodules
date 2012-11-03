@@ -1,6 +1,6 @@
-[submodule "src/lib/threejs"]
-	path = src/lib/threejs
+[submodule "sub/threejs"]
+	path = sub/threejs
 	url = https://github.com/mrdoob/three.js.git
-[submodule "src/lib/tweenjs"]
-	path = src/lib/tweenjs
-	url = https://github.com/sole/tween.js/
+[submodule "sub/tweenjs"]
+	path = sub/tweenjs
+	url = https://github.com/sole/tween.js.git
