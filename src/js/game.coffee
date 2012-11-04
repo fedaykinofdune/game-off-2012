@@ -2,17 +2,27 @@
 
 requirejs [
 
-    'lib/three'
-    'lib/tween'
+    'grid'
     'unit'
+    'graphics'
 
-], (THREE, TWEEN, Unit) ->
+], (Grid, Unit, Graphics) ->
 
     class Game
 
-        constructor: ->
+        constructor: (container) ->
+
+            @grid = new Grid()
+            @graphics = new Graphics @grid
 
             console.log 'Game created! /tumbleweed'
-            console.log THREE
 
-    new Game()
+        run: ->
+
+            requestAnimationFrame => @step() and @run()
+
+        step: ->
+
+            @graphics.update()
+
+    new Game().run()
