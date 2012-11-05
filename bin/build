@@ -3,9 +3,12 @@
 root_dir=$(dirname $(dirname ${0}))
 
 cd ${root_dir}
+
 git submodule update --init --recursive
 sub/stimpackjs/bin/build
-mkdir -p node_modules && npm install grunt-requirejs grunt-shell grunt-coffeelint
+
+npm install
 coffee -c grunt.coffee
 grunt
+
 cd -

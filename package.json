@@ -1,0 +1,16 @@
+{
+    "name": "Feathers",
+    "version": "0.1.0",
+    "description": "3D real-time strategy survival game.",
+    "author": "Maros Hluska <mhluska@gmail.com> (mhluska.com)",
+    "contributors": [
+        "Maros Hluska <mhluska@gmail.com> (mhluska.com)",
+        "Mujtaba Arshad",
+        "Pierre Arys"
+    ],
+    "dependencies": {
+        "grunt-requirejs": "*",
+        "grunt-shell": "*",
+        "grunt-coffeelint": "*"
+    }
+}
