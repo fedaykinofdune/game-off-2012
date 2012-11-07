@@ -14,6 +14,7 @@ module.exports = (grunt) ->
                         value: 4
 
         shell:
+            setup: command: 'mkdir -p src/js/lib'
             link:
                 command: 'ln -fs ../../../node_modules/grunt-requirejs/node_modules/requirejs/require.js src/js/lib/ && \ 
                     ln -fs ../../../sub/threejs/build/three.js src/js/lib/ && \ 
