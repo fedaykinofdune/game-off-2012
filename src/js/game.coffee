@@ -27,7 +27,6 @@ requirejs [
             @_setupMouse()
 
         run: ->
-
             requestAnimationFrame @run.bind @
             @_step()
             @graphics.update()
@@ -37,10 +36,10 @@ requirejs [
         _setupMouse: ->
 
             $(container).mousemove (event) =>
-                @grid.setMouse event.offsetX, event.offsetY
+                @graphics.setMouse event.offsetX, event.offsetY
 
             $(container).mouseleave (event) =>
-                @grid.clearMouse()
+                @graphics.clearMouse()
 
     container = document.getElementById 'game'
     new Game(container).run()

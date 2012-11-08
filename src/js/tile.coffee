@@ -4,6 +4,7 @@ define ->
 
     class Tile
 
-        constructor: (@x, @y) ->
+        constructor: (@position) ->
 
             @active = false
+            @mesh = null
