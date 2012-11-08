@@ -12,6 +12,8 @@ module.exports = (grunt) ->
                 options:
                     indentation:
                         value: 4
+                    no_plusplus:
+                        level: 'error'
 
         shell:
             setup: command: 'mkdir -p src/js/lib'
@@ -32,8 +34,8 @@ module.exports = (grunt) ->
 
             paths: {}
             shim:
-                'lib/three.js': 'exports': 'THREE'
-                'lib/tween.js': 'exports': 'TWEEN'
+                'lib/three': 'exports': 'THREE'
+                'lib/tween': 'exports': 'TWEEN'
 
             skipModuleInsertion: false
             optimizeAllPluginResources: true
