@@ -5,3 +5,5 @@ define ->
     class Tile
 
         constructor: (@x, @y) ->
+
+            @active = false

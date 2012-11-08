@@ -36,5 +36,11 @@ requirejs [
 
         _setupMouse: ->
 
+            $(container).mousemove (event) =>
+                @grid.setMouse event.offsetX, event.offsetY
+
+            $(container).mouseleave (event) =>
+                @grid.clearMouse()
+
     container = document.getElementById 'game'
     new Game(container).run()
