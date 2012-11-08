@@ -4,14 +4,17 @@ define [
 
     'lib/three'
     'lib/tween'
+    'constants'
 
-], (THREE, TWEEN) ->
+], (THREE, TWEEN, Const) ->
 
     class Graphics
 
         constructor: (@_container, @_grid) ->
 
             @_setupScene()
+            @_setupAxis()
+            @_setupGrid()
 
         update: ->
 
@@ -38,19 +41,31 @@ define [
 
             # TODO: Detect support for WebGLRenderer and use it when
             # appropriate.
-            @_renderer = new THREE.CanvasRenderer()
+            @_renderer = new THREE.WebGLRenderer()
             @_renderer.setSize sceneWidth, sceneHeight
             @_container.appendChild @_renderer.domElement
+
+        _setupAxis: ->
+
+            axis = new THREE.AxisHelper 50
+            axis.scale.multiplyScalar 2
+            @_scene.add axis
+            @_camera.lookAt axis.position
+
+        _setupGrid: ->
+
+            geometry = new THREE.PlaneGeometry @_grid.tilesX * Const.tileSize,
+                @_grid.tilesY * Const.tileSize
+            material = new THREE.MeshLambertMaterial color: 0xA5C9F3
+            @_gridMesh = new THREE.Mesh geometry, material
+            @_gridMesh.material.side = THREE.DoubleSide
+            @_gridMesh.rotation.x = Math.PI / 2
+            
+            @_scene.add @_gridMesh
+            @_camera.lookAt @_gridMesh.position
 
         _setupCamera: (ratio) ->
 
             @_camera = new THREE.PerspectiveCamera 75, ratio, 50, 10000
-            @_camera.position.set -200, 150, 200
+            @_camera.position.set -380, 350, 380
             @_scene.add @_camera
-
-            geometry = new THREE.CubeGeometry 50, 50, 50
-            material = new THREE.MeshLambertMaterial color: 0xA5C9F3
-            @_cube = new THREE.Mesh geometry, material
-            @_scene.add @_cube
-
-            @_camera.lookAt @_cube.position
