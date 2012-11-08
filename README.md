@@ -9,9 +9,7 @@ You will need the following packages before building:
 * RubyGems
 * NPM
 * Node
-* CoffeeScript 
-
-Read up on installing CoffeeScript [here](https://github.com/jashkenas/coffee-script).
+* [CoffeeScript](https://github.com/jashkenas/coffee-script)
 
 #### Usage ####
     git clone https://github.com/mhluska/Feathers.git && cd Feathers 
