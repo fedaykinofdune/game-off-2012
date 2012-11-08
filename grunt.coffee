@@ -20,7 +20,8 @@ module.exports = (grunt) ->
             link:
                 command: 'ln -fs ../../../node_modules/grunt-requirejs/node_modules/requirejs/require.js src/js/lib/ && \ 
                     ln -fs ../../../sub/threejs/build/three.js src/js/lib/ && \ 
-                    ln -fs ../../../sub/tweenjs/build/tween.min.js src/js/lib/tween.js'
+                    ln -fs ../../../sub/tweenjs/build/tween.min.js src/js/lib/tween.js && \ 
+                    ln -fs ../../../sub/zepto/dist/zepto.js src/js/lib/'
             compile:
                 command: "coffee -c $(find src/js/ -name '*.coffee')"
 
@@ -36,6 +37,7 @@ module.exports = (grunt) ->
             shim:
                 'lib/three': 'exports': 'THREE'
                 'lib/tween': 'exports': 'TWEEN'
+                'lib/zepto': 'exports': '$'
 
             skipModuleInsertion: false
             optimizeAllPluginResources: true

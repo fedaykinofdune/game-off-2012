@@ -6,14 +6,16 @@ require.config
     shim:
         'lib/three': 'exports': 'THREE'
         'lib/tween': 'exports': 'TWEEN'
+        'lib/zepto': 'exports': '$'
 
 requirejs [
 
+    'lib/zepto'
     'grid'
     'unit'
     'graphics'
 
-], (Grid, Unit, Graphics) ->
+], ($, Grid, Unit, Graphics) ->
 
     class Game
 
@@ -22,15 +24,17 @@ requirejs [
             @grid = new Grid()
             @graphics = new Graphics container, @grid
 
-            console.log 'Game created! /tumbleweed'
+            @_setupMouse()
 
         run: ->
 
             requestAnimationFrame @run.bind @
-            @step()
+            @_step()
             @graphics.update()
 
-        step: ->
+        _step: ->
+
+        _setupMouse: ->
 
     container = document.getElementById 'game'
     new Game(container).run()

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+call_dir=$(pwd)
 root_dir=$(dirname $(dirname ${0}))
 
 cd ${root_dir}
@@ -8,7 +9,13 @@ git submodule update --init --recursive
 sub/stimpackjs/bin/build
 
 npm install
+
+cd sub/zepto
+bundle
+rake concat[-polyfill:-zepto:-detect:-fx:-ajax:-form] dist
+cd -
+
 coffee -c grunt.coffee
 grunt
 
-cd -
+cd ${call_dir}
