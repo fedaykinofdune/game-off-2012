@@ -14,7 +14,7 @@ npm install
 
 cd sub/zepto
 bundle
-rake concat[-polyfill:-zepto:-detect:-fx:-ajax:-form] dist
+rake concat[-polyfill:-detect:-fx:-ajax:-form] dist
 cd -
 
 coffee -c grunt.coffee

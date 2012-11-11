@@ -24,6 +24,7 @@ requirejs [
             @grid = new Grid()
             @graphics = new Graphics container, @grid
 
+            @_offset = $(container).offset()
             @_setupMouse()
 
         run: ->
@@ -36,7 +37,9 @@ requirejs [
         _setupMouse: ->
 
             $(container).mousemove (event) =>
-                @graphics.setMouse event.offsetX, event.offsetY
+                x = event.offsetX or event.layerX - @_offset.left
+                y = event.offsetY or event.layerY - @_offset.top
+                @graphics.setMouse x, y
 
             $(container).mouseleave (event) =>
                 @graphics.clearMouse()
