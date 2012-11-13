@@ -5,6 +5,7 @@ Goose Rampage
 Build obstacles and fend off diamond-hungry geese.
 
 You will need the following packages before building:
+* Rake
 * Ruby
 * RubyGems
 * NPM
