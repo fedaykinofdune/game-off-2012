@@ -78,9 +78,12 @@ define [
             light1.position.set 500, 500, 500
             @_scene.add light1
 
-            # TODO: Detect support for WebGLRenderer and use it when
-            # appropriate.
-            @_renderer = new THREE.WebGLRenderer()
+            @_renderer =
+                if @_supportWebGL()
+                    new THREE.WebGLRenderer()
+                else
+                    new THREE.CanvasRenderer()
+
             @_renderer.setSize sceneWidth, sceneHeight
             @_container.appendChild @_renderer.domElement
 
@@ -126,3 +129,18 @@ define [
             @_mesh2tile[hash] = tile
 
             @_scene.add tile.mesh
+
+        _supportWebGL: ->
+
+            canvas = document.createElement 'canvas'
+            do ->
+                try
+                    window.WebGLRenderingContext? and
+                        canvas.getContext('experimental-webgl')?
+
+                catch e
+                    false
+
+
+
+
