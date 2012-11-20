@@ -8,7 +8,7 @@ require.config
         'lib/tween': 'exports': 'TWEEN'
         'lib/zepto': 'exports': '$'
 
-requirejs [
+define [
 
     'lib/zepto'
     'grid'
