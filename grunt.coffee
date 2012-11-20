@@ -11,9 +11,9 @@ module.exports = (grunt) ->
                 options: grunt.file.readJSON 'coffeelint.json'
 
         shell:
-            setup:   command: 'bin/grunt/setup'
-            link:    command: 'bin/grunt/link'
-            compile: command: 'bin/grunt/compile'
+            setup:   command: 'grunt/task/setup'
+            link:    command: 'grunt/task/link'
+            compile: command: 'grunt/task/compile'
 
         requirejs:
             almond: true
