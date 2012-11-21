@@ -25,7 +25,7 @@ define [
             @_graphics = new Graphics container, @_grid
 
             @_offset = $(container).offset()
-            @_setupMouse()
+            @_setupEvents()
 
         run: ->
             requestAnimationFrame @run.bind @
@@ -34,7 +34,11 @@ define [
 
         _step: ->
 
-        _setupMouse: ->
+        _setupEvents: ->
+
+            $(window).keydown (event) ->
+
+                console.log "Pressed #{event.which}!"
 
             $(container).mousedown (event) =>
 
