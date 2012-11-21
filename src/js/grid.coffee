@@ -48,6 +48,8 @@ define [
             
             graphics.scene.add @mesh
 
+        clickTile: (vector) ->
+
         activateTile: (vector) ->
 
             xIndex = Math.round (vector.x - @_halfTile) / @tilesX * 2

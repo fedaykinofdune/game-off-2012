@@ -47,7 +47,24 @@ define [
             # @_controls.update @_clock.getDelta()
             @_renderer.render @scene, @_camera
 
-        setMouse: (x, y) ->
+        clickTile: (x, y) ->
+
+            @_grid.clickTile @_mouse2vec x, y
+
+        activateTile: (x, y) ->
+
+            intersection = @_mouse2vec x, y
+
+            unless intersection
+                @clearMouse()
+                return
+
+            @_grid.activateTile intersection
+
+        clearMouse: ->
+
+        # TODO: Move this code to Grid object or Graphics class?
+        _mouse2vec: (x, y) ->
 
             # Convert to NDC (normalized device coordinates).
             x = (x / @_container.clientWidth) * 2 - 1
@@ -62,13 +79,7 @@ define [
 
             intersects = ray.intersectObject @_grid.mesh
 
-            unless intersects.length
-                @clearMouse()
-                return
-
-            @_grid.activateTile intersects[0].point
-
-        clearMouse: ->
+            intersects?[0]?.point
 
         _setupScene: ->
 

@@ -36,13 +36,21 @@ define [
 
         _setupMouse: ->
 
+            $(container).mousedown (event) =>
+                @_graphics.clickTile @_getMousePos(event)...
+
             $(container).mousemove (event) =>
-                x = event.offsetX or event.layerX - @_offset.left
-                y = event.offsetY or event.layerY - @_offset.top
-                @_graphics.setMouse x, y
+                @_graphics.activateTile @_getMousePos(event)...
 
             $(container).mouseleave (event) =>
                 @_graphics.clearMouse()
+
+        _getMousePos: (event) ->
+
+            x = event.offsetX or event.layerX - @_offset.left
+            y = event.offsetY or event.layerY - @_offset.top
+
+            [x, y]
 
     container = document.getElementById 'game'
     new Game(container).run()
