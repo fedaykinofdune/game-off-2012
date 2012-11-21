@@ -2,11 +2,13 @@
 
 define [
 
+    'lib/three'
+    'graphics'
     'unit'
     'tile'
     'constants'
     
-], (Unit, Tile, Const) ->
+], (THREE, Graphics, Unit, Tile, Const) ->
 
     class Grid
 
@@ -33,6 +35,18 @@ define [
                 z: centerX * Const.tileSize + @_halfTile
 
             @tiles[centerX][@tilesY - 2].unit = new Unit unitPosition
+
+        update: (graphics) ->
+
+            return if @mesh
+
+            @mesh = Graphics.makePlane \
+                @tilesX * Const.tileSize,
+                @tilesY * Const.tileSize,
+                0xa5c9f3,
+                @position
+            
+            graphics.scene.add @mesh
 
         activateTile: (vector) ->
 

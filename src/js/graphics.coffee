@@ -17,14 +17,26 @@ define [
 
             @_setupScene()
             @_setupAxis()
-            @_setupGrid()
+            @_grid.update @
+
             @_projector = new THREE.Projector()
 
-            # TODO: Use Stimpack.HashMap.
+            # TODO: Use Stimpack.Map.
             @_mesh2tile = {}
             @_clock = new THREE.Clock()
 
-            @_camera.lookAt @_gridMesh.position
+            @_camera.lookAt @_grid.mesh.position
+
+        @makePlane: (length, width, color, pos) ->
+
+            geometry = new THREE.PlaneGeometry length, width
+            material = new THREE.MeshLambertMaterial color: color
+            plane = new THREE.Mesh geometry, material
+            plane.position.copy pos if pos
+            plane.material.side = THREE.DoubleSide
+            plane.rotation.x = Math.PI / 2
+
+            plane
 
         update: ->
 
@@ -33,7 +45,7 @@ define [
                     @_updateTile tile
 
             # @_controls.update @_clock.getDelta()
-            @_renderer.render @_scene, @_camera
+            @_renderer.render @scene, @_camera
 
         setMouse: (x, y) ->
 
@@ -48,7 +60,7 @@ define [
             ray = new THREE.Ray @_camera.position,
                 vector.subSelf(@_camera.position).normalize()
 
-            intersects = ray.intersectObject @_gridMesh
+            intersects = ray.intersectObject @_grid.mesh
 
             unless intersects.length
                 @clearMouse()
@@ -58,16 +70,9 @@ define [
 
         clearMouse: ->
 
-        _setupGrid: ->
-
-            @_gridMesh = @_makePlane @_grid.tilesX * Const.tileSize,
-                @_grid.tilesY * Const.tileSize, 0xa5c9f3, @_grid.position
-            
-            @_scene.add @_gridMesh
-
         _setupScene: ->
 
-            @_scene = new THREE.Scene()
+            @scene = new THREE.Scene()
 
             # TODO: Make this more cross-browser without bringing in jQuery
             sceneWidth = @_container.clientWidth
@@ -76,7 +81,7 @@ define [
 
             light1 = new THREE.PointLight 0xffffff
             light1.position.set 500, 500, 500
-            @_scene.add light1
+            @scene.add light1
 
             @_renderer =
                 if @_supportWebGL()
@@ -91,7 +96,7 @@ define [
 
             axis = new THREE.AxisHelper 50
             axis.scale.multiplyScalar 2
-            @_scene.add axis
+            @scene.add axis
             @_camera.lookAt axis.position
 
         _setupCamera: (ratio) ->
@@ -109,18 +114,7 @@ define [
             @_controls.dragToLook = false
             ###
 
-            @_scene.add @_camera
-
-        _makePlane: (length, width, color, pos) ->
-
-            geometry = new THREE.PlaneGeometry length, width
-            material = new THREE.MeshLambertMaterial color: color
-            plane = new THREE.Mesh geometry, material
-            plane.position.copy(pos) if pos
-            plane.material.side = THREE.DoubleSide
-            plane.rotation.x = Math.PI / 2
-
-            plane
+            @scene.add @_camera
 
         _makeSphere: (pos) ->
 
@@ -148,19 +142,22 @@ define [
 
         _setupTileMesh: (tile) ->
 
-            tile.mesh = @_makePlane Const.tileSize, Const.tileSize, 0x9586DE,
+            tile.mesh = Graphics.makePlane \
+                Const.tileSize,
+                Const.tileSize,
+                0x9586DE,
                 tile.position
 
             pos = tile.mesh.position
             hash = "#{pos.x}#{pos.y}#{pos.z}"
             @_mesh2tile[hash] = tile
 
-            @_scene.add tile.mesh
+            @scene.add tile.mesh
 
         _setupUnitMesh: (unit) ->
 
             unit.mesh = @_makeSphere unit.position
-            @_scene.add unit.mesh
+            @scene.add unit.mesh
 
         _supportWebGL: ->
 

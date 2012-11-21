@@ -21,8 +21,8 @@ define [
 
         constructor: (container) ->
 
-            @grid = new Grid()
-            @graphics = new Graphics container, @grid
+            @_grid = new Grid()
+            @_graphics = new Graphics container, @_grid
 
             @_offset = $(container).offset()
             @_setupMouse()
@@ -30,7 +30,7 @@ define [
         run: ->
             requestAnimationFrame @run.bind @
             @_step()
-            @graphics.update()
+            @_graphics.update()
 
         _step: ->
 
@@ -39,10 +39,10 @@ define [
             $(container).mousemove (event) =>
                 x = event.offsetX or event.layerX - @_offset.left
                 y = event.offsetY or event.layerY - @_offset.top
-                @graphics.setMouse x, y
+                @_graphics.setMouse x, y
 
             $(container).mouseleave (event) =>
-                @graphics.clearMouse()
+                @_graphics.clearMouse()
 
     container = document.getElementById 'game'
     new Game(container).run()
