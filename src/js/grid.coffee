@@ -22,8 +22,7 @@ define [
                 y: 0
                 z: centerY * Const.tileSize
 
-            @lastActiveTile = null
-
+            @_lastHighlightedTile = null
             @_halfTile = (Const.tileSize / 2)
             @_setupTiles()
 
@@ -34,7 +33,7 @@ define [
                 y: Const.unitSphereRadius
                 z: centerX * Const.tileSize + @_halfTile
 
-            @tiles[centerX][@tilesY - 2].unit = new Unit unitPosition
+            @tiles[@tilesY - 2][centerX].unit = new Unit unitPosition
 
         update: (graphics) ->
 
@@ -50,20 +49,36 @@ define [
 
         clickTile: (vector) ->
 
-        activateTile: (vector) ->
+            tile = @_vec2tile vector
+
+            # Deactivate previous unit.
+            # ...
+
+            return unless tile?.unit
+
+            tile.unit.active = true
+
+        highlightTile: (vector) ->
+
+            tile = @_vec2tile vector
+
+            return unless tile
+            return if tile is @_lastHighlightedTile
+
+            tile.highlighted = true
+            @_lastHighlightedTile?.highlighted = false
+            @_lastHighlightedTile = tile
+
+        clearTile: ->
+
+        _vec2tile: (vector) ->
+
+            return unless vector
 
             xIndex = Math.round (vector.x - @_halfTile) / @tilesX * 2
             yIndex = Math.round (vector.z - @_halfTile) / @tilesY * 2
 
-            tile = @tiles[xIndex][yIndex]
-
-            return if tile is @lastActiveTile
-
-            tile.active = true
-            @lastActiveTile?.active = false
-            @lastActiveTile = tile
-
-        clearTile: ->
+            @tiles[xIndex][yIndex]
 
         _setupTiles: ->
 

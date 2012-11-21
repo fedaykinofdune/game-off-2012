@@ -47,7 +47,7 @@ define [
                     @_grid.clearTile()
                     return
 
-                @_grid.activateTile intersection
+                @_grid.highlightTile intersection
 
             $(container).mouseleave (event) =>
 

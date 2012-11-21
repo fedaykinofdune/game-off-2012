@@ -6,5 +6,5 @@ define ->
 
         constructor: (@position) ->
 
-            @active = false
+            @highlighted = false
             @mesh = null

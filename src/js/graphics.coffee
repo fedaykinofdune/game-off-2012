@@ -38,6 +38,16 @@ define [
 
             plane
 
+        @makeSphere: (pos) ->
+
+            geometry = new THREE.SphereGeometry Const.unitSphereRadius, 10, 10
+            material = new THREE.MeshLambertMaterial color: 0x7FDC50
+            sphere = new THREE.Mesh geometry, material
+            sphere.position.copy(pos) if pos
+            sphere.overdraw = true
+
+            sphere
+
         update: ->
 
             for column in @_grid.tiles
@@ -111,29 +121,15 @@ define [
 
             @scene.add @_camera
 
-        _makeSphere: (pos) ->
-
-            geometry = new THREE.SphereGeometry Const.unitSphereRadius, 10, 10
-            material = new THREE.MeshLambertMaterial color: 0x7FDC50
-            sphere = new THREE.Mesh geometry, material
-            sphere.position.copy(pos) if pos
-            sphere.overdraw = true
-
-            sphere
-
         _updateTile: (tile) ->
 
-            if tile.active
+            if tile.highlighted
                 @_setupTileMesh tile unless tile.mesh
                 tile.mesh.visible = true
             else
                 tile.mesh?.visible = false
 
-            if tile.unit?
-                @_setupUnitMesh tile.unit unless tile.unit.mesh
-                @_updateUnit tile.unit
-
-        _updateUnit: (unit) ->
+            tile.unit?.update @
 
         _setupTileMesh: (tile) ->
 
@@ -148,11 +144,6 @@ define [
             @_mesh2tile[hash] = tile
 
             @scene.add tile.mesh
-
-        _setupUnitMesh: (unit) ->
-
-            unit.mesh = @_makeSphere unit.position
-            @scene.add unit.mesh
 
         _supportWebGL: ->
 
