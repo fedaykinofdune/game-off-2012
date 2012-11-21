@@ -38,10 +38,10 @@ define [
 
             plane
 
-        @makeSphere: (pos) ->
+        @makeSphere: (pos, color) ->
 
             geometry = new THREE.SphereGeometry Const.unitSphereRadius, 10, 10
-            material = new THREE.MeshLambertMaterial color: 0x7FDC50
+            material = new THREE.MeshLambertMaterial color: color
             sphere = new THREE.Mesh geometry, material
             sphere.position.copy(pos) if pos
             sphere.overdraw = true

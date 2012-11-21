@@ -38,8 +38,6 @@ define [
 
             $(window).keydown (event) ->
 
-                console.log "Pressed #{event.which}!"
-
             $(container).mousedown (event) =>
 
                 @_grid.clickTile @_graphics.mouse2vec @_getMousePos(event)...

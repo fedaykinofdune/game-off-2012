@@ -3,8 +3,9 @@
 define [
     
     'graphics'
+    'constants'
 
-], (Graphics) ->
+], (Graphics, Const) ->
 
     class Unit
 
@@ -19,16 +20,34 @@ define [
         update: (graphics) ->
 
             unless @mesh
-                @mesh = Graphics.makeSphere @position
+                @mesh = Graphics.makeSphere @position, Const.debug.unitColor
                 graphics.scene.add @mesh
 
             if @active
 
-                # Create the active mesh if its not already created.
-                # ...
+                @activeSprite ?= @_makeActiveSprite()
+                @_updateActiveSprite()
             
             else
 
-                # Hide the active mesh.
-                # ...
+                @_hideActiveSprite()
 
+        _makeActiveSprite: ->
+
+            # Load the sprite. 
+            # For now we just modify the object color and return a temporary 
+            # string.
+            @mesh.material.color.setHex Const.debug.activeUnitColor
+
+            'no sprite'
+
+        _updateActiveSprite: ->
+
+            # Update the position of @activeSprite to match @position
+            # For now we just modify the object color.
+            @mesh.material.color.setHex Const.debug.activeUnitColor
+
+        _hideActiveSprite: ->
+
+            # For now we just reset the color of the unit.
+            @mesh.material.color.setHex Const.debug.unitColor

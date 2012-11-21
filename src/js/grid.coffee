@@ -22,7 +22,6 @@ define [
                 y: 0
                 z: centerY * Const.tileSize
 
-            @_lastHighlightedTile = null
             @_halfTile = (Const.tileSize / 2)
             @_setupTiles()
 
@@ -50,26 +49,32 @@ define [
         clickTile: (vector) ->
 
             tile = @_vec2tile vector
-
-            # Deactivate previous unit.
-            # ...
-
-            return unless tile?.unit
-
-            tile.unit.active = true
+            @_setSingletonProperty tile?.unit, 'active'
 
         highlightTile: (vector) ->
 
             tile = @_vec2tile vector
-
-            return unless tile
-            return if tile is @_lastHighlightedTile
-
-            tile.highlighted = true
-            @_lastHighlightedTile?.highlighted = false
-            @_lastHighlightedTile = tile
+            @_setSingletonProperty tile, 'highlighted'
 
         clearTile: ->
+
+        # Sets a property on an object. The function ensures the property is
+        # only ever active on one of those objects. For example, only one tile
+        # can have the highlighted property or currently only one unit can have
+        # the active property.
+        _setSingletonProperty: (object, property) ->
+
+            previousObjectName = "#{property}Previous"
+            previousObject = @[previousObjectName]
+
+            unless object is previousObject
+
+                previousObject?[property] = false
+
+            return unless object
+
+            object[property] = true
+            @[previousObjectName] = object
 
         _vec2tile: (vector) ->
 
