@@ -5,8 +5,8 @@ Goose Rampage
 Build obstacles and fend off diamond-hungry geese.
 
 You will need the following packages before building:
-* [Bundler](https://github.com/carlhuda/bundler)
 * [RubyGems](https://github.com/rubygems/rubygems)
+* [Bundler](https://github.com/carlhuda/bundler)
 * [Node](https://github.com/joyent/node)
 * [CoffeeScript](https://github.com/jashkenas/coffee-script)
 
