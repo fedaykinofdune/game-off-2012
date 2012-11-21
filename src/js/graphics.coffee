@@ -7,8 +7,9 @@ define [
     'lib/tween'
     'lib/stim'
     'constants'
+    'flycontrols'
 
-], ($, THREE, TWEEN, Stim, Const) ->
+], ($, THREE, TWEEN, Stim, Const, FlyControls) ->
 
     class Graphics
 
@@ -21,18 +22,17 @@ define [
 
             # TODO: Use Stimpack.HashMap.
             @_mesh2tile = {}
+            @_clock = new THREE.Clock()
 
             @_camera.lookAt @_gridMesh.position
-
-            # TODO: Get Stimpack to import properly.
-            console.log Stim
 
         update: ->
 
             for column in @_grid.tiles
                 for tile in column
-                    @_updateMesh tile
+                    @_updateTile tile
 
+            # @_controls.update @_clock.getDelta()
             @_renderer.render @_scene, @_camera
 
         setMouse: (x, y) ->
@@ -60,7 +60,7 @@ define [
 
         _setupGrid: ->
 
-            @_gridMesh = @_setupPlane @_grid.tilesX * Const.tileSize,
+            @_gridMesh = @_makePlane @_grid.tilesX * Const.tileSize,
                 @_grid.tilesY * Const.tileSize, 0xa5c9f3, @_grid.position
             
             @_scene.add @_gridMesh
@@ -97,10 +97,21 @@ define [
         _setupCamera: (ratio) ->
 
             @_camera = new THREE.PerspectiveCamera 75, ratio, 50, 10000
-            @_camera.position.set -380, 350, 380
+            @_camera.position.set 600, 350, 200
+
+            # TODO: The controls are temporary for debugging.
+            ###
+            @_controls = new THREE.FlyControls @_camera
+            @_controls.movementSpeed = 1000
+            @_controls.domElement = @_container
+            @_controls.rollSpeed = Math.PI / 2
+            @_controls.autoForward = false
+            @_controls.dragToLook = false
+            ###
+
             @_scene.add @_camera
 
-        _setupPlane: (length, width, color, pos) ->
+        _makePlane: (length, width, color, pos) ->
 
             geometry = new THREE.PlaneGeometry length, width
             material = new THREE.MeshLambertMaterial color: color
@@ -111,17 +122,33 @@ define [
 
             plane
 
-        _updateMesh: (tile) ->
+        _makeSphere: (pos) ->
+
+            geometry = new THREE.SphereGeometry Const.unitSphereRadius, 10, 10
+            material = new THREE.MeshLambertMaterial color: 0x7FDC50
+            sphere = new THREE.Mesh geometry, material
+            sphere.position.copy(pos) if pos
+            sphere.overdraw = true
+
+            sphere
+
+        _updateTile: (tile) ->
 
             if tile.active
-                @_setupTileMesh(tile) unless tile.mesh
+                @_setupTileMesh tile unless tile.mesh
                 tile.mesh.visible = true
             else
                 tile.mesh?.visible = false
 
+            if tile.unit?
+                @_setupUnitMesh tile.unit unless tile.unit.mesh
+                @_updateUnit tile.unit
+
+        _updateUnit: (unit) ->
+
         _setupTileMesh: (tile) ->
 
-            tile.mesh = @_setupPlane Const.tileSize, Const.tileSize, 0x9586DE,
+            tile.mesh = @_makePlane Const.tileSize, Const.tileSize, 0x9586DE,
                 tile.position
 
             pos = tile.mesh.position
@@ -129,6 +156,11 @@ define [
             @_mesh2tile[hash] = tile
 
             @_scene.add tile.mesh
+
+        _setupUnitMesh: (unit) ->
+
+            unit.mesh = @_makeSphere unit.position
+            @_scene.add unit.mesh
 
         _supportWebGL: ->
 
@@ -140,7 +172,3 @@ define [
 
                 catch e
                     false
-
-
-
-
