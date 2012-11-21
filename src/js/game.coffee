@@ -37,13 +37,21 @@ define [
         _setupMouse: ->
 
             $(container).mousedown (event) =>
-                @_graphics.clickTile @_getMousePos(event)...
+
+                @_grid.clickTile @_graphics.mouse2vec @_getMousePos(event)...
 
             $(container).mousemove (event) =>
-                @_graphics.activateTile @_getMousePos(event)...
+
+                intersection = @_graphics.mouse2vec @_getMousePos(event)...
+                unless intersection
+                    @_grid.clearTile()
+                    return
+
+                @_grid.activateTile intersection
 
             $(container).mouseleave (event) =>
-                @_graphics.clearMouse()
+
+                @_grid.clearTile()
 
         _getMousePos: (event) ->
 

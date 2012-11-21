@@ -63,6 +63,8 @@ define [
             @lastActiveTile?.active = false
             @lastActiveTile = tile
 
+        clearTile: ->
+
         _setupTiles: ->
 
             @tiles = []
