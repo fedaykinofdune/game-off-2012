@@ -17,11 +17,12 @@ define [
             # Tiles per second.
             @_speed = 1
 
-        moveTo: (targetTile) ->
+        moveTo: (targetTile, graph) ->
 
-            # Use A* to find a path to tile.
-            # ...
-            path = [targetTile]
+            # TODO: Replace Dijkstra's with A*.
+            path = graph.dijkstra @tile, targetTile
+
+            console.log path
 
             @_moveToAdjacent tile for tile in path
 
