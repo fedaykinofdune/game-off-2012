@@ -8,8 +8,12 @@ define ->
 
         @events:
             leftClick: 1
-            rightClick: 3
             middleClick: 2
+            rightClick: 3
+            leftArrow: 37
+            upArrow: 38
+            rightArrow: 39
+            downArrow: 40
 
         # These constants are used in development and debugging. They will go
         # away in the final release.
