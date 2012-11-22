@@ -3,6 +3,7 @@ define ->
     class Constants
 
         @tileSize: 16
+        @tileCrossDistance: Math.sqrt @tileSize * @tileSize * 3
         @unitSphereRadius: 8
 
         @events:

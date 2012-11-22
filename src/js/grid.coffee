@@ -101,9 +101,9 @@ define [
             for x in [0...@tilesX]
                 @tiles[x] ?= []
                 for z in [0...@tilesY]
-                    position =
-                        x: Const.tileSize * x + @_halfTile
-                        z: Const.tileSize * z + @_halfTile
-                        y: @position.y + 1
+                    position = new THREE.Vector3 \
+                        Const.tileSize * x + @_halfTile,    # x
+                        @position.y + 1,                    # y
+                        Const.tileSize * z + @_halfTile     # z
 
                     @tiles[x][z] = new Tile position

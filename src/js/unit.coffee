@@ -43,23 +43,30 @@ define [
         _moveToAdjacent: (tile) ->
 
             # Check if @position is adjacent to tile.position based on
-            # hexagonal movement. 
-            # ...
-            adjacent = true
-
-            unless adjacent
+            # hexagonal movement.
+            unless @_isAdjacent tile
 
                 console.warn 'Shortest path algorithm gave non-adjacent tile.'
                 return
 
-            console.log "moving to tile:"
-            console.log tile
-
-            # Tween the position of the unit at a rate of @speed
+            # Tween the position of the unit at a rate of @speed.
             # For now just instantly move the unit there.
             @position.copy tile.position
             @mesh.position.copy tile.position
             tile.addUnit @
+
+        _isAdjacent: (tile) ->
+
+            distanceVector = tile.position.clone().subSelf @position
+
+            return false if distanceVector.length() > Const.tileCrossDistance
+
+            # TODO: Check the angle of distanceVector to determine true
+            # adjacency. This probably won't be needed since the game
+            # environment is a flat plane and distance is enough of a
+            # determining factor.
+
+            true
 
         _makeActiveSprite: ->
 
