@@ -27,6 +27,7 @@ define [
 
             @_offset = $(container).offset()
             @_setupEvents()
+            @_setupEventStates()
 
         run: ->
             requestAnimationFrame @run.bind @
@@ -37,7 +38,13 @@ define [
 
         _setupEvents: ->
 
-            $(window).keydown (event) ->
+            $(window).keydown (event) =>
+                event.preventDefault()
+                @eventStates[event.which] = true if @eventStates[event.which]?
+
+            $(window).keyup (event) =>
+                event.preventDefault()
+                @eventStates[event.which] = false if @eventStates[event.which]?
 
             # Disables browser popup on right click.
             $(container).bind 'contextmenu', (event) ->
@@ -65,6 +72,13 @@ define [
             $(container).mouseleave (event) =>
 
                 @_grid.clearTile()
+
+        _setupEventStates: ->
+            _events = (value for event, value of Const.events)
+            for event in _events
+                _events[event] = false
+
+            @eventStates = _events
 
         _getMousePos: (event) ->
 
