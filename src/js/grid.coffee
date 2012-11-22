@@ -99,8 +99,10 @@ define [
 
             @tiles = []
             for x in [0...@tilesX]
+
                 @tiles[x] ?= []
                 for z in [0...@tilesY]
+
                     position = new THREE.Vector3 \
                         Const.tileSize * x + @_halfTile,    # x
                         @position.y + 1,                    # y
