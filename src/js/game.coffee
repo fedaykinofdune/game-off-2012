@@ -14,8 +14,9 @@ define [
     'grid'
     'unit'
     'graphics'
+    'constants'
 
-], ($, Grid, Unit, Graphics) ->
+], ($, Grid, Unit, Graphics, Const) ->
 
     class Game
 
@@ -38,9 +39,19 @@ define [
 
             $(window).keydown (event) ->
 
+            # Disables browser popup on right click.
+            $(container).bind 'contextmenu', (event) ->
+
+                event.preventDefault()
+
             $(container).mousedown (event) =>
 
-                @_grid.clickTile @_graphics.mouse2vec @_getMousePos(event)...
+                vector = @_graphics.mouse2vec @_getMousePos(event)...
+
+                switch event.which
+
+                    when Const.events.leftClick then @_grid.clickUnit vector
+                    when Const.events.rightClick then @_grid.moveUnit vector
 
             $(container).mousemove (event) =>
 

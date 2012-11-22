@@ -8,3 +8,8 @@ define ->
 
             @highlighted = false
             @mesh = null
+
+        addUnit: (unit) ->
+
+            @unit = unit
+            unit.tile = @

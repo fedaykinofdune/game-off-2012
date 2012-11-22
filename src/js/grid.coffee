@@ -27,12 +27,12 @@ define [
 
             @centerTile = @tiles[centerX][centerY]
 
-            unitPosition =
-                x: (@tilesY - 2) * Const.tileSize + @_halfTile
-                y: Const.unitSphereRadius
-                z: centerX * Const.tileSize + @_halfTile
+            unitPosition = new THREE.Vector3 \
+                (@tilesY - 2) * Const.tileSize + @_halfTile,    # x
+                Const.unitSphereRadius,                         # y
+                centerX * Const.tileSize + @_halfTile           # z
 
-            @tiles[@tilesY - 2][centerX].unit = new Unit unitPosition
+            @tiles[@tilesY - 2][centerX].addUnit new Unit unitPosition
 
         update: (graphics) ->
 
@@ -46,7 +46,17 @@ define [
             
             graphics.scene.add @mesh
 
-        clickTile: (vector) ->
+        moveUnit: (vector) ->
+
+            return unless @_activePrevious
+
+            tile = @_vec2tile vector
+
+            return unless tile
+
+            @_activePrevious.moveTo tile
+
+        clickUnit: (vector) ->
 
             tile = @_vec2tile vector
             @_setSingletonProperty tile?.unit, 'active'
@@ -64,7 +74,7 @@ define [
         # the active property.
         _setSingletonProperty: (object, property) ->
 
-            previousObjectName = "#{property}Previous"
+            previousObjectName = "_#{property}Previous"
             previousObject = @[previousObjectName]
 
             unless object is previousObject

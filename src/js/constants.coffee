@@ -5,6 +5,11 @@ define ->
         @tileSize: 16
         @unitSphereRadius: 8
 
+        @events:
+            leftClick: 1
+            rightClick: 3
+            middleClick: 2
+
         # These constants are used in development and debugging. They will go
         # away in the final release.
         @debug:
