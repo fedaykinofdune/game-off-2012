@@ -26,6 +26,7 @@ define [
             @_graphics = new Graphics container, @_grid
 
             @_offset = $(container).offset()
+            @_keyStates = {}
             @_setupEvents()
 
         run: ->
@@ -37,12 +38,11 @@ define [
 
         _setupEvents: ->
 
-            $(window).keydown (event) ->
+            $(window).keydown (event) => @_setKeyState event.which, true
+            $(window).keyup (event) => @_setKeyState event.which, false
 
             # Disables browser popup on right click.
-            $(container).bind 'contextmenu', (event) ->
-
-                event.preventDefault()
+            $(container).bind 'contextmenu', (event) -> event.preventDefault()
 
             $(container).mousedown (event) =>
 
@@ -50,8 +50,8 @@ define [
 
                 switch event.which
 
-                    when Const.events.leftClick then @_grid.clickUnit vector
-                    when Const.events.rightClick then @_grid.moveUnit vector
+                    when Const.mouse.leftClick then @_grid.clickUnit vector
+                    when Const.mouse.rightClick then @_grid.moveUnit vector
 
             $(container).mousemove (event) =>
 
@@ -62,9 +62,15 @@ define [
 
                 @_grid.highlightTile intersection
 
-            $(container).mouseleave (event) =>
+            $(container).mouseleave (event) => @_grid.clearTile()
 
-                @_grid.clearTile()
+        _setKeyState: (keyCode, bool) ->
+
+            return unless keyCode in Const.keys
+
+            event.preventDefault()
+
+            @_keyStates[keyCode] = bool
 
         _getMousePos: (event) ->
 

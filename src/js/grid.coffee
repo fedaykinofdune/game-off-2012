@@ -147,7 +147,11 @@ define [
                     newX = x + i
                     newY = y + j
 
+                    # Squares with diagonal edges get more weight to represent
+                    # a longer distance.
+                    weight = if i is 0 or j is 0 then 1 else 2
+
                     if @tiles[newX]?[newY]?
-                        neighbours.push @tiles[newX][newY]
+                        neighbours.push [@tiles[newX][newY], weight]
 
             neighbours
