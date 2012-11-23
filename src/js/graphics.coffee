@@ -55,6 +55,7 @@ define [
                     @_updateTile tile
 
             # @_controls.update @_clock.getDelta()
+            TWEEN.update()
             @_renderer.render @scene, @_camera
 
         # TODO: Move this code to Grid object or Graphics class?

@@ -3,10 +3,11 @@
 define [
     
     'lib/three'
+    'lib/tween'
     'graphics'
     'constants'
 
-], (THREE, Graphics, Const) ->
+], (THREE, TWEEN, Graphics, Const) ->
 
     class Unit
 
@@ -22,9 +23,23 @@ define [
             # TODO: Replace Dijkstra's with A*.
             path = graph.dijkstra @tile, targetTile
 
-            console.log path
+            return unless path.length
 
-            @_moveToAdjacent tile for tile in path
+            @_tweenStart?.stop()
+            @_tweenStart = null
+            @_tweenHead = null
+            TWEEN.removeAll()
+
+            tile = @tile
+            for nextTile in path
+                tween = @_moveToAdjacent tile, nextTile
+                @_tweenStart ?= tween
+                @_tweenHead?.chain tween
+                @_tweenHead = tween
+                tile = nextTile
+
+            @_tweenHead.onComplete => @_tweenStart = null
+            @_tweenStart.start()
 
         update: (graphics) ->
 
@@ -41,24 +56,31 @@ define [
 
                 @_hideActiveSprite()
 
-        _moveToAdjacent: (tile) ->
+        _moveToAdjacent: (tile, nextTile) ->
 
             # Check if @position is adjacent to tile.position based on
             # hexagonal movement.
-            unless @_isAdjacent tile
+            unless @_isAdjacent tile, nextTile
 
                 console.warn 'Shortest path algorithm gave non-adjacent tile.'
                 return
 
-            # Tween the position of the unit at a rate of @speed.
-            # For now just instantly move the unit there.
-            @position.copy tile.position
-            @mesh.position.copy tile.position
-            tile.addUnit @
+            start = tile.position.clone()
 
-        _isAdjacent: (tile) ->
+            # However, we still animate the mesh.
+            new TWEEN.Tween(start)
+                .to(nextTile.position, 200)
+                .easing(TWEEN.Easing.Linear.None)
+                .onStart( =>
+                                @position.copy nextTile.position
+                                nextTile.addUnit @
+                )
+                .onUpdate =>
+                                @mesh.position.copy start
 
-            distanceVector = tile.position.clone().subSelf @position
+        _isAdjacent: (tile, nextTile) ->
+
+            distanceVector = nextTile.position.clone().subSelf tile.position
 
             return false if distanceVector.length() > Const.tileCrossDistance
 
