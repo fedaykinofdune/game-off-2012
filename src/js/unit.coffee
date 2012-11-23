@@ -4,10 +4,11 @@ define [
     
     'lib/three'
     'lib/tween'
+    'lib/stim'
     'graphics'
     'constants'
 
-], (THREE, TWEEN, Graphics, Const) ->
+], (THREE, TWEEN, Stim, Graphics, Const) ->
 
     class Unit
 
@@ -25,21 +26,19 @@ define [
 
             return unless path.length
 
-            @_tweenStart?.stop()
-            @_tweenStart = null
-            @_tweenHead = null
-            TWEEN.removeAll()
+            @_stopAnimation()
 
             tile = @tile
             for nextTile in path
+
                 tween = @_moveToAdjacent tile, nextTile
-                @_tweenStart ?= tween
-                @_tweenHead?.chain tween
-                @_tweenHead = tween
+                break unless tween
+
+                @_tweenQueue.enqueue tween
                 tile = nextTile
 
-            @_tweenHead.onComplete => @_tweenStart = null
-            @_tweenStart.start()
+            @_tweenQueue.last().onComplete => @_tweenQueue.clear()
+            @_tweenQueue.peek().start()
 
         update: (graphics) ->
 
@@ -56,6 +55,16 @@ define [
 
                 @_hideActiveSprite()
 
+        _stopAnimation: ->
+
+            @_tweenQueue ?= new Stim.Queue()
+            @_tweenQueue.peek()?.stop()
+
+            # TODO: This is inefficient because TWEEN.remove runs in linear
+            # time. Fix this if it becomes a bottleneck.
+            until @_tweenQueue.length() is 0
+                TWEEN.remove @_tweenQueue.dequeue()
+
         _moveToAdjacent: (tile, nextTile) ->
 
             # Check if @position is adjacent to tile.position based on
@@ -67,7 +76,6 @@ define [
 
             start = tile.position.clone()
 
-            # However, we still animate the mesh.
             new TWEEN.Tween(start)
                 .to(nextTile.position, 200)
                 .easing(TWEEN.Easing.Linear.None)
@@ -75,8 +83,12 @@ define [
                                 @position.copy nextTile.position
                                 nextTile.addUnit @
                 )
-                .onUpdate =>
+                .onUpdate( =>
                                 @mesh.position.copy start
+                )
+                .onComplete =>
+                                @_tweenQueue.dequeue()
+                                @_tweenQueue.peek().start()
 
         _isAdjacent: (tile, nextTile) ->
 
