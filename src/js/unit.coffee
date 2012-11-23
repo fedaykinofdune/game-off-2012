@@ -17,7 +17,7 @@ define [
             @active = false
 
             # Tiles per second.
-            @_speed = 1
+            @_speed = 0.2
 
         moveTo: (targetTile, graph) ->
 
@@ -75,9 +75,10 @@ define [
                 return
 
             start = tile.position.clone()
+            speed = @_distance(tile, nextTile) / @_speed
 
             new TWEEN.Tween(start)
-                .to(nextTile.position, 200)
+                .to(nextTile.position, speed)
                 .easing(TWEEN.Easing.Linear.None)
                 .onStart( =>
                                 @position.copy nextTile.position
@@ -92,9 +93,9 @@ define [
 
         _isAdjacent: (tile, nextTile) ->
 
-            distanceVector = nextTile.position.clone().subSelf tile.position
+            distance = @_distance tile, nextTile
 
-            return false if distanceVector.length() > Const.tileCrossDistance
+            return false if distance > Const.tileCrossDistance
 
             # TODO: Check the angle of distanceVector to determine true
             # adjacency. This probably won't be needed since the game
@@ -102,6 +103,10 @@ define [
             # determining factor.
 
             true
+
+        _distance: (tile1, tile2) ->
+
+            tile2.position.clone().subSelf(tile1.position).length()
 
         _makeActiveSprite: ->
 
