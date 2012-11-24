@@ -50,7 +50,7 @@ define [
 
         moveUnit: (vector) ->
 
-            return unless @_activePrevious
+            return unless @_activePrevious?.active
 
             tile = @_vec2tile vector
 

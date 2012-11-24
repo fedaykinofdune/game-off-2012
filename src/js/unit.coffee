@@ -43,7 +43,26 @@ define [
         update: (graphics) ->
 
             unless @mesh
-                @mesh = Graphics.makeSphere @position, Const.debug.unitColor
+
+                body = Graphics.makeSphere \
+                    Const.debug.unitBodyRadius,
+                    Const.debug.unitBodyColor
+
+                headOffset = new THREE.Vector3 \
+                    0,
+                    0,
+                    Const.debug.unitBodyRadius + Const.debug.unitHeadRadius
+
+                head = Graphics.makeSphere \
+                    Const.debug.unitHeadRadius,
+                    Const.debug.unitHeadColor,
+                    headOffset
+
+                @mesh = new THREE.Object3D()
+                @mesh.add body
+                @mesh.add head
+                @mesh.position.copy @position
+
                 graphics.scene.add @mesh
 
             if @active
@@ -77,10 +96,12 @@ define [
             start = tile.position.clone()
             speed = @_distance(tile, nextTile) / @_speed
 
+            # Tween the unit position.
             new TWEEN.Tween(start)
                 .to(nextTile.position, speed)
                 .easing(TWEEN.Easing.Linear.None)
                 .onStart( =>
+                                @mesh.lookAt nextTile.position
                                 @position.copy nextTile.position
                                 nextTile.addUnit @
                 )
@@ -106,14 +127,18 @@ define [
 
         _distance: (tile1, tile2) ->
 
-            tile2.position.clone().subSelf(tile1.position).length()
+            @_direction(tile1, tile2).length()
+
+        _direction: (tile1, tile2) ->
+
+            tile2.position.clone().subSelf tile1.position
 
         _makeActiveSprite: ->
 
             # Load the sprite.
             # For now we just modify the object color and return a temporary
             # string.
-            @mesh.material.color.setHex Const.debug.activeUnitColor
+            @mesh.children[0].material.color.setHex Const.debug.activeUnitColor
 
             'no sprite'
 
@@ -121,9 +146,9 @@ define [
 
             # Update the position of @activeSprite to match @position
             # For now we just modify the object color.
-            @mesh.material.color.setHex Const.debug.activeUnitColor
+            @mesh.children[0].material.color.setHex Const.debug.activeUnitColor
 
         _hideActiveSprite: ->
 
             # For now we just reset the color of the unit.
-            @mesh.material.color.setHex Const.debug.unitColor
+            @mesh.children[0].material.color.setHex Const.debug.unitBodyColor

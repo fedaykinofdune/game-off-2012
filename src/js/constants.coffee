@@ -4,7 +4,6 @@ define ->
 
         @tileSize: 16
         @tileCrossDistance: Math.sqrt @tileSize * @tileSize * 3
-        @unitSphereRadius: 8
 
         @mouse:
             leftClick:   1
@@ -20,5 +19,10 @@ define ->
         # These constants are used in development and debugging. They will go
         # away in the final release.
         @debug:
-            unitColor: 0x7fdc50
+            unitBodyColor:   0x7fdc50
+            unitHeadColor:   0xff1100
             activeUnitColor: 0xc9ff5b
+
+            unitBodyRadius: 8
+            unitHeadRadius: 2
+

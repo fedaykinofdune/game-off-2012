@@ -38,9 +38,9 @@ define [
 
             plane
 
-        @makeSphere: (pos, color) ->
+        @makeSphere: (radius, color, pos) ->
 
-            geometry = new THREE.SphereGeometry Const.unitSphereRadius, 10, 10
+            geometry = new THREE.SphereGeometry radius, 10, 10
             material = new THREE.MeshLambertMaterial color: color
             sphere = new THREE.Mesh geometry, material
             sphere.position.copy(pos) if pos
