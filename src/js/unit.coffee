@@ -20,6 +20,9 @@ define [
 
         constructor: (@_speed = 0.2) ->
 
+            @position ?= new THREE.Vector3()
+            @rotation ?= new THREE.Vector3()
+
             @active = false
 
         moveTo: (targetTile, graph) ->

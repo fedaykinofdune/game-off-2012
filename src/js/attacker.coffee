@@ -8,7 +8,7 @@ define [
 
     class Attacker extends Unit
 
-        constructor: (@position = new THREE.Vector3()) ->
+        constructor: (@position, @rotation) ->
 
             super 0.2
 
@@ -32,6 +32,7 @@ define [
             mesh.add body
             mesh.add head
             mesh.position.copy @position
+            mesh.rotation.copy @rotation
 
             graphics.scene.add mesh
 

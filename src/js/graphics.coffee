@@ -20,9 +20,6 @@ define [
             @_grid.update @
 
             @_projector = new THREE.Projector()
-
-            # TODO: Use Stimpack.Map.
-            @_mesh2tile = {}
             @_clock = new THREE.Clock()
 
             @_camera.lookAt @_grid.mesh.position
@@ -148,10 +145,6 @@ define [
                 Const.tileSize,
                 0x9586DE,
                 tile.position
-
-            pos = tile.mesh.position
-            hash = "#{pos.x}#{pos.y}#{pos.z}"
-            @_mesh2tile[hash] = tile
 
             @scene.add tile.mesh
 

@@ -62,6 +62,8 @@ define [
 
             @tiles[x][y].addObject object
 
+            object
+
         moveUnit: (vector) ->
 
             return unless @_activePrevious?.active

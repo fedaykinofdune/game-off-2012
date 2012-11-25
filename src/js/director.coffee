@@ -27,4 +27,6 @@ define [
             y = Utils.random 0, @_grid.tilesY - 1
 
             enemy = @_grid.addObject x, y, Unit.type.enemy
+            enemy.rotation.y += Math.PI / 2
+
             @_enemies.push enemy
