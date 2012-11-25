@@ -27,6 +27,15 @@ define [
 
             @_camera.lookAt @_grid.mesh.position
 
+        @makeCube: (size, color, pos) ->
+
+            geometry = new THREE.CubeGeometry size, size, size
+            material = new THREE.MeshLambertMaterial color: color
+            cube = new THREE.Mesh geometry, material
+            cube.position.copy pos
+
+            cube
+
         @makePlane: (length, width, color, pos) ->
 
             geometry = new THREE.PlaneGeometry length, width

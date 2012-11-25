@@ -10,12 +10,11 @@ define [
 
         @type:
 
-            block: 0
-            flag:  1
+            coin: 0
 
         constructor: (@position = new THREE.Vector3(), @type) ->
 
-            @type ?= Item.type.block
+            @type ?= Item.type.coin
 
             console.log 'Item loaded! /tumbleweed'
 
@@ -27,10 +26,6 @@ define [
 
             switch @type
 
-                when Item.type.block
+                when Item.type.coin
 
-                    'make block'
-
-                when Item.type.flag
-
-                    'make flag'
+                    'make coin'

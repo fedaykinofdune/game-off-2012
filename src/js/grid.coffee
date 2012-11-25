@@ -6,35 +6,30 @@ define [
     'lib/stim'
     'graphics'
     'unit'
+    'attacker'
+    'block'
     'tile'
     'constants'
     
-], (THREE, Stim, Graphics, Unit, Tile, Const) ->
+], (THREE, Stim, Graphics, Unit, Attacker, Block, Tile, Const) ->
 
     class Grid
 
         constructor: (@tilesX = 32, @tilesY = 32) ->
 
-            centerX = Math.floor @tilesX / 2
-            centerY = Math.floor @tilesY / 2
+            @_centerX = Math.floor @tilesX / 2
+            @_centerY = Math.floor @tilesY / 2
 
             @position =
-                x: centerX * Const.tileSize
+                x: @_centerX * Const.tileSize
                 y: 0
-                z: centerY * Const.tileSize
+                z: @_centerY * Const.tileSize
 
             @_halfTile = (Const.tileSize / 2)
+
             @_setupTiles()
             @_setupGraph()
-
-            @centerTile = @tiles[centerX][centerY]
-
-            unitPosition = new THREE.Vector3 \
-                (@tilesY - 2) * Const.tileSize + @_halfTile,    # x
-                Const.unitSphereRadius,                         # y
-                centerX * Const.tileSize + @_halfTile           # z
-
-            @tiles[@tilesY - 2][centerX].addUnit new Unit unitPosition
+            @_setupObjects()
 
         update: (graphics) ->
 
@@ -86,6 +81,9 @@ define [
         # only ever active on one of those objects. For example, only one tile
         # can have the highlighted property or currently only one unit can have
         # the active property.
+        #
+        # TODO: This is probably way too abstract. How to rewrite this without
+        # introducing duplicated code in clickUnit and highlightTile?
         _setSingletonProperty: (object, property) ->
 
             previousObjectName = "_#{property}Previous"
@@ -108,6 +106,34 @@ define [
             yIndex = Math.round (vector.z - @_halfTile) / @tilesY * 2
 
             @tiles[xIndex][yIndex]
+
+        _addObject: (x, y, objectType = Unit.type.attacker) ->
+
+            position = new THREE.Vector3 \
+                x * Const.tileSize + @_halfTile,    # x
+                Const.debug.unitBodyRadius,         # y
+                y * Const.tileSize + @_halfTile     # z
+
+            # TODO: For now we just add units, but later we will deal with
+            # items. A tile can have many items.
+            object =
+                switch objectType
+                    when Unit.type.attacker then new Attacker position
+                    when Unit.type.block    then new Block position
+
+            @tiles[x][y].addObject object
+
+        _setupObjects: ->
+
+            # Setup the player.
+            @_addObject @tilesX - 2, @_centerX
+
+            # Setup some random blocks.
+            # TODO: These are for demo purposes and will probably go in the
+            # final release.
+            @_addObject 20, 10, Unit.type.block
+            @_addObject 25, 8,  Unit.type.block
+            @_addObject 15, 20, Unit.type.block
 
         # TODO: Make _setupTiles and _setupGraph more efficient. We shouldn't
         # have to make three passes over the tiles to set everything up.

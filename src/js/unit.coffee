@@ -12,14 +12,19 @@ define [
 
     class Unit
 
-        constructor: (@position = new THREE.Vector3()) ->
+        @type:
+            attacker: 0
+            enemy:    1
+            block:    2
+            flag:     3
+
+        constructor: (@_speed = 0.2) ->
 
             @active = false
 
-            # Tiles per second.
-            @_speed = 0.2
-
         moveTo: (targetTile, graph) ->
+
+            return if @_speed is 0
 
             # TODO: Replace Dijkstra's with A* if it gets laggy.
             path = graph.dijkstra @tile, targetTile
@@ -53,31 +58,6 @@ define [
 
                 @_hideActiveSprite()
 
-        _makeMesh: (graphics) ->
-
-            body = Graphics.makeSphere \
-                Const.debug.unitBodyRadius,
-                Const.debug.unitBodyColor
-
-            headOffset = new THREE.Vector3 \
-                0,
-                0,
-                Const.debug.unitBodyRadius + Const.debug.unitHeadRadius
-
-            head = Graphics.makeSphere \
-                Const.debug.unitHeadRadius,
-                Const.debug.unitHeadColor,
-                headOffset
-
-            mesh = new THREE.Object3D()
-            mesh.add body
-            mesh.add head
-            mesh.position.copy @position
-
-            graphics.scene.add mesh
-
-            mesh
-
         _stopAnimation: ->
 
             @_tweenQueue ?= new Stim.Queue()
@@ -107,7 +87,7 @@ define [
                 .onStart( =>
                                 @mesh.lookAt nextTile.position
                                 @position.copy nextTile.position
-                                nextTile.addUnit @
+                                nextTile.addObject @
                 )
                 .onUpdate( =>
                                 @mesh.position.copy start
@@ -136,23 +116,3 @@ define [
         _direction: (tile1, tile2) ->
 
             tile2.position.clone().subSelf tile1.position
-
-        _makeActiveSprite: ->
-
-            # Load the sprite.
-            # For now we just modify the object color and return a temporary
-            # string.
-            @mesh.children[0].material.color.setHex Const.debug.activeUnitColor
-
-            'no sprite'
-
-        _updateActiveSprite: ->
-
-            # Update the position of @activeSprite to match @position
-            # For now we just modify the object color.
-            @mesh.children[0].material.color.setHex Const.debug.activeUnitColor
-
-        _hideActiveSprite: ->
-
-            # For now we just reset the color of the unit.
-            @mesh.children[0].material.color.setHex Const.debug.unitBodyColor

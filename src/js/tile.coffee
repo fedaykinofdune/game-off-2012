@@ -1,6 +1,10 @@
 'use strict'
 
-define ->
+define [
+
+    'unit'
+    
+], (Unit) ->
 
     class Tile
 
@@ -9,10 +13,9 @@ define ->
             @highlighted = false
             @mesh = null
 
-        addUnit: (unit) ->
+        addObject: (@unit) ->
 
-            @unit = unit
-            unit.tile = @
+            @unit.tile = @
 
         # Used to create a unique hash of this object. Used heavily in the
         # Graph module.
