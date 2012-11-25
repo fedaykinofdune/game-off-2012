@@ -13,10 +13,11 @@ requirejs [
     'lib/zepto'
     'grid'
     'unit'
+    'director'
     'graphics'
     'constants'
 
-], ($, Grid, Unit, Graphics, Const) ->
+], ($, Grid, Unit, Director, Graphics, Const) ->
 
     class Game
 
@@ -24,6 +25,7 @@ requirejs [
 
             @_grid = new Grid()
             @_graphics = new Graphics container, @_grid
+            @_director = new Director @_grid
 
             @_offset = $(container).offset()
             @_keyStates = {}
@@ -31,10 +33,8 @@ requirejs [
 
         run: ->
             requestAnimationFrame @run.bind @
-            @_step()
+            @_director.update()
             @_graphics.update()
-
-        _step: ->
 
         _setupEvents: ->
 

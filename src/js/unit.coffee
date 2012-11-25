@@ -42,7 +42,11 @@ define [
                 @_tweenQueue.enqueue tween
                 tile = nextTile
 
-            @_tweenQueue.last().onComplete => @_tweenQueue.clear()
+            @_tweenQueue.last().onComplete =>
+
+                graph.removeVertex targetTile
+                @_tweenQueue.clear()
+
             @_tweenQueue.peek().start()
 
         update: (graphics) ->

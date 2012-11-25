@@ -43,6 +43,25 @@ define [
             
             graphics.scene.add @mesh
 
+        addObject: (x, y, objectType = Unit.type.attacker) ->
+
+            position = new THREE.Vector3 \
+                x * Const.tileSize + @_halfTile,    # x
+                Const.debug.unitBodyRadius,         # y
+                y * Const.tileSize + @_halfTile     # z
+
+            @_graph.removeVertex @tiles[x][y]
+
+            # TODO: For now we just add units, but later we will deal with
+            # items. A tile can have many items.
+            object =
+                switch objectType
+                    when Unit.type.attacker then new Attacker position
+                    when Unit.type.enemy    then new Attacker position
+                    when Unit.type.block    then new Block position
+
+            @tiles[x][y].addObject object
+
         moveUnit: (vector) ->
 
             return unless @_activePrevious?.active
@@ -107,40 +126,21 @@ define [
 
             @tiles[xIndex][yIndex]
 
-        _addObject: (x, y, objectType = Unit.type.attacker) ->
-
-            position = new THREE.Vector3 \
-                x * Const.tileSize + @_halfTile,    # x
-                Const.debug.unitBodyRadius,         # y
-                y * Const.tileSize + @_halfTile     # z
-
-            if objectType is Unit.type.block
-                @_graph.removeVertex @tiles[x][y]
-
-            # TODO: For now we just add units, but later we will deal with
-            # items. A tile can have many items.
-            object =
-                switch objectType
-                    when Unit.type.attacker then new Attacker position
-                    when Unit.type.block    then new Block position
-
-            @tiles[x][y].addObject object
-
         _setupObjects: ->
 
             # Setup the player.
-            @_addObject @tilesX - 2, @_centerX
+            @addObject @tilesX - 2, @_centerX
 
             # Setup some blocks.
             # TODO: These are for demo purposes and will probably go in the
             # final release.
-            @_addObject 21, 10, Unit.type.block
-            @_addObject 20, 10, Unit.type.block
-            @_addObject 20, 11, Unit.type.block
-            @_addObject 20, 12, Unit.type.block
-            @_addObject 20, 12, Unit.type.block
-            @_addObject 25, 8,  Unit.type.block
-            @_addObject 15, 20, Unit.type.block
+            @addObject 21, 10, Unit.type.block
+            @addObject 20, 10, Unit.type.block
+            @addObject 20, 11, Unit.type.block
+            @addObject 20, 12, Unit.type.block
+            @addObject 20, 12, Unit.type.block
+            @addObject 25, 8,  Unit.type.block
+            @addObject 15, 20, Unit.type.block
 
         # TODO: Make _setupTiles and _setupGraph more efficient. We shouldn't
         # have to make three passes over the tiles to set everything up.
