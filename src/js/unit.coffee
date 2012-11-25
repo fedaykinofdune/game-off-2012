@@ -21,7 +21,7 @@ define [
 
         moveTo: (targetTile, graph) ->
 
-            # TODO: Replace Dijkstra's with A*.
+            # TODO: Replace Dijkstra's with A* if it gets laggy.
             path = graph.dijkstra @tile, targetTile
 
             return unless path.length
@@ -42,28 +42,7 @@ define [
 
         update: (graphics) ->
 
-            unless @mesh
-
-                body = Graphics.makeSphere \
-                    Const.debug.unitBodyRadius,
-                    Const.debug.unitBodyColor
-
-                headOffset = new THREE.Vector3 \
-                    0,
-                    0,
-                    Const.debug.unitBodyRadius + Const.debug.unitHeadRadius
-
-                head = Graphics.makeSphere \
-                    Const.debug.unitHeadRadius,
-                    Const.debug.unitHeadColor,
-                    headOffset
-
-                @mesh = new THREE.Object3D()
-                @mesh.add body
-                @mesh.add head
-                @mesh.position.copy @position
-
-                graphics.scene.add @mesh
+            @mesh ?= @_makeMesh graphics
 
             if @active
 
@@ -73,6 +52,31 @@ define [
             else
 
                 @_hideActiveSprite()
+
+        _makeMesh: (graphics) ->
+
+            body = Graphics.makeSphere \
+                Const.debug.unitBodyRadius,
+                Const.debug.unitBodyColor
+
+            headOffset = new THREE.Vector3 \
+                0,
+                0,
+                Const.debug.unitBodyRadius + Const.debug.unitHeadRadius
+
+            head = Graphics.makeSphere \
+                Const.debug.unitHeadRadius,
+                Const.debug.unitHeadColor,
+                headOffset
+
+            mesh = new THREE.Object3D()
+            mesh.add body
+            mesh.add head
+            mesh.position.copy @position
+
+            graphics.scene.add mesh
+
+            mesh
 
         _stopAnimation: ->
 

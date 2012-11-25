@@ -1,5 +1,8 @@
 define ->
 
+    # TODO: This file should only have global constants used across several
+    # classes. A lot of these should be moved into a class. For example mouse
+    # and keys constants can go to the Game class.
     class Constants
 
         @tileSize: 16
