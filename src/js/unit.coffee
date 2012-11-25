@@ -29,8 +29,10 @@ define [
 
             return if @_speed is 0
 
-            # TODO: Replace Dijkstra's with A* if it gets laggy.
-            path = graph.dijkstra @tile, targetTile
+            path = graph.aStar @tile, targetTile, (vertex) ->
+
+                Math.max Math.abs(vertex.position.x - targetTile.position.x),
+                    Math.abs(vertex.position.z - targetTile.position.z)
 
             return unless path.length
 
