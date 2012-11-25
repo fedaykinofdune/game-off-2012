@@ -114,6 +114,9 @@ define [
                 Const.debug.unitBodyRadius,         # y
                 y * Const.tileSize + @_halfTile     # z
 
+            if objectType is Unit.type.block
+                @_graph.removeVertex @tiles[x][y]
+
             # TODO: For now we just add units, but later we will deal with
             # items. A tile can have many items.
             object =
@@ -128,10 +131,14 @@ define [
             # Setup the player.
             @_addObject @tilesX - 2, @_centerX
 
-            # Setup some random blocks.
+            # Setup some blocks.
             # TODO: These are for demo purposes and will probably go in the
             # final release.
+            @_addObject 21, 10, Unit.type.block
             @_addObject 20, 10, Unit.type.block
+            @_addObject 20, 11, Unit.type.block
+            @_addObject 20, 12, Unit.type.block
+            @_addObject 20, 12, Unit.type.block
             @_addObject 25, 8,  Unit.type.block
             @_addObject 15, 20, Unit.type.block
 
