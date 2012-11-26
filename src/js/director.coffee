@@ -32,3 +32,7 @@ define [
             @_enemies.push enemy
 
             enemy.patrolTo @_grid.tiles[@_grid.tilesX - 1][y]
+
+            # TODO: This is temporary code for testing the follow function.
+            if @_enemies.length is @_maxEnemies
+                @_enemies[0].follow @_grid.player

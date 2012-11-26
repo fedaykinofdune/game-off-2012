@@ -9,9 +9,10 @@ define [
     'attacker'
     'block'
     'tile'
+    'utils'
     'constants'
     
-], (THREE, Stim, Graphics, Unit, Attacker, Block, Tile, Const) ->
+], (THREE, Stim, Graphics, Unit, Attacker, Block, Tile, Utils, Const) ->
 
     class Grid
 
@@ -155,18 +156,18 @@ define [
         _setupObjects: ->
 
             # Setup the player.
-            @addObject @tilesX - 2, @_centerX
+            # TODO: player is a temporary variable. It will go once there is a
+            # notion of multiple player units.
+            @player = @addObject @tilesX - 2, @_centerX
 
             # Setup some blocks.
             # TODO: These are for demo purposes and will probably go in the
             # final release.
-            @addObject 21, 10, Unit.type.block
-            @addObject 20, 10, Unit.type.block
-            @addObject 20, 11, Unit.type.block
-            @addObject 20, 12, Unit.type.block
-            @addObject 20, 12, Unit.type.block
-            @addObject 25, 8,  Unit.type.block
-            @addObject 15, 20, Unit.type.block
+            for i in [1..30]
+                rand = Utils.random(@tilesX / 3, 2 * @tilesX / 3)
+                rand = Math.max 0, rand - 1
+                rand = Math.floor rand
+                @addObject rand, Utils.random(0, @tilesY - 1), Unit.type.block
 
         # TODO: Make _setupTiles and _setupGraph more efficient. We shouldn't
         # have to make three passes over the tiles to set everything up.

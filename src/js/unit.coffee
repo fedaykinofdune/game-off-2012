@@ -48,14 +48,20 @@ define [
 
                 @moveTo currentTile, @_attackNearby, -> move()
 
+        follow: (unit) ->
+
+            # TODO: This is really laggy. Implement D* to handle this.
+            # do move = =>
+
+            #     @stop()
+            #     @moveTo unit.tile
+            #     setTimeout move, 200
+
         moveTo: (targetTile, beforeMoveAction, doneAction) ->
 
             return if @_speed is 0
 
-            path = @_grid.graph.aStar @tile, targetTile, (vertex) ->
-
-                Math.max Math.abs(vertex.position.x - targetTile.position.x),
-                    Math.abs(vertex.position.z - targetTile.position.z)
+            path = @_pathTo targetTile
 
             return unless path.length
 
@@ -72,12 +78,13 @@ define [
 
             @_tweenQueue.last().onComplete =>
 
-                @_grid.graph.removeVertex targetTile
                 @_tweenQueue.clear()
 
-                doneAction?()
+                doneAction? targetTile
 
             @_tweenQueue.peek().start()
+
+            path
 
         update: (graphics) ->
 
@@ -92,10 +99,17 @@ define [
 
                 @_hideActiveSprite()
 
+        _pathTo: (targetTile) ->
+
+            @_grid.graph.aStar @tile, targetTile, (vertex) ->
+
+                # The Chebyshev distance heuristic.
+                Math.max Math.abs(vertex.position.x - targetTile.position.x),
+                    Math.abs(vertex.position.z - targetTile.position.z)
+
         _attackNearby: ->
 
             # Check nearby tiles for an opposing unit.
-
 
         _stopAnimation: ->
 
@@ -107,6 +121,8 @@ define [
             until @_tweenQueue.length() is 0
                 TWEEN.remove @_tweenQueue.dequeue()
 
+         # TODO: Consider rewriting this function. The whole system of chaining
+         # tweens seems messy.
         _moveToAdjacent: (tile, nextTile, beforeMoveAction) ->
 
             # Check if @position is adjacent to tile.position based on
@@ -129,6 +145,11 @@ define [
                                 @mesh.lookAt nextTile.position
                                 @position.copy nextTile.position
                                 nextTile.addObject @
+
+                                # On the last movement we want to immediately
+                                # occupy the square.
+                                if @_tweenQueue.length() is 1
+                                    @_grid.graph.removeVertex nextTile
                 )
                 .onUpdate( =>
                                 @mesh.position.copy start
