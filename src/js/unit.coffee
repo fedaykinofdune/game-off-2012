@@ -31,7 +31,7 @@ define [
             @_patrolling = false
             @_stopAnimation()
 
-        patrolTo: (targetTile, beforeMoveAction) ->
+        patrolTo: (targetTile) ->
 
             @_patrolling = true
 
@@ -46,13 +46,13 @@ define [
                 targetTile = currentTile
                 currentTile = temp
 
-                @moveTo currentTile, beforeMoveAction, -> move()
+                @moveTo currentTile, @_attackNearby, -> move()
 
         moveTo: (targetTile, beforeMoveAction, doneAction) ->
 
             return if @_speed is 0
 
-            path = @_graph.aStar @tile, targetTile, (vertex) ->
+            path = @_grid.graph.aStar @tile, targetTile, (vertex) ->
 
                 Math.max Math.abs(vertex.position.x - targetTile.position.x),
                     Math.abs(vertex.position.z - targetTile.position.z)
@@ -72,7 +72,7 @@ define [
 
             @_tweenQueue.last().onComplete =>
 
-                @_graph.removeVertex targetTile
+                @_grid.graph.removeVertex targetTile
                 @_tweenQueue.clear()
 
                 doneAction?()
@@ -91,6 +91,11 @@ define [
             else
 
                 @_hideActiveSprite()
+
+        _attackNearby: ->
+
+            # Check nearby tiles for an opposing unit.
+
 
         _stopAnimation: ->
 

@@ -10,7 +10,7 @@ define [
         @size:  16
         @color: 0xcccccc
 
-        constructor: (@_graph, @position) ->
+        constructor: (@_grid, @position) ->
 
             @position ?= new THREE.Vector3()
 

@@ -50,15 +50,15 @@ define [
                 Const.debug.unitBodyRadius,         # y
                 y * Const.tileSize + @_halfTile     # z
 
-            @_graph.removeVertex @tiles[x][y]
+            @graph.removeVertex @tiles[x][y]
 
             # TODO: For now we just add units, but later we will deal with
             # items. A tile can have many items.
             object =
                 switch objectType
-                    when Unit.type.attacker then new Attacker @_graph, position
-                    when Unit.type.enemy    then new Attacker @_graph, position
-                    when Unit.type.block    then new Block @_graph, position
+                    when Unit.type.attacker then new Attacker @, position
+                    when Unit.type.enemy    then new Attacker @, position
+                    when Unit.type.block    then new Block @, position
 
             @tiles[x][y].addObject object
 
@@ -98,6 +98,25 @@ define [
 
                     callback x, y, @tiles[x][y]
 
+        # Tile iterator. Traverses tiles around the given tile up to a given
+        # distance.
+        around: (tile, distance, callback) ->
+
+            [x, y] = @_vec2index tile.position
+            @_around x, y, distance, callback
+
+        _around: (x, y, distance, callback) ->
+
+            for i in [-distance..distance]
+                for j in [-distance..distance]
+
+                    continue if i is 0 and j is 0
+
+                    newX = x + i
+                    newY = y + j
+
+                    callback newX, newY, @tiles[newX]?[newY]
+
         # Sets a property on an object. The function ensures the property is
         # only ever active on one of those objects. For example, only one tile
         # can have the highlighted property or currently only one unit can have
@@ -123,10 +142,15 @@ define [
 
             return unless vector
 
-            xIndex = Math.round (vector.x - @_halfTile) / @tilesX * 2
-            yIndex = Math.round (vector.z - @_halfTile) / @tilesY * 2
+            [x, y] = @_vec2index vector
+            @tiles[x][y]
 
-            @tiles[xIndex][yIndex]
+        _vec2index: (vector) ->
+
+            x = Math.round (vector.x - @_halfTile) / @tilesX * 2
+            y = Math.round (vector.z - @_halfTile) / @tilesY * 2
+
+            [x, y]
 
         _setupObjects: ->
 
@@ -164,29 +188,21 @@ define [
 
         _setupGraph: ->
 
-            @_graph = new Stim.Graph()
+            @graph = new Stim.Graph()
             @eachTile (x, y, tile) =>
 
-                @_graph.addVertex tile, tile.neighbours
+                @graph.addVertex tile, tile.neighbours
 
         # Builds a list of neighbouring tiles.
         _makeFriends: (x, y) ->
 
             neighbours = []
 
-            for i in [-1, 0, 1]
-                for j in [-1, 0, 1]
+            @_around x, y, 1, (newX, newY, tile) =>
 
-                    continue if i is 0 and j is 0
-
-                    newX = x + i
-                    newY = y + j
-
-                    # Squares with diagonal edges get more weight to represent
-                    # a longer distance.
-                    weight = if i is 0 or j is 0 then 1 else 2
-
-                    if @tiles[newX]?[newY]?
-                        neighbours.push [@tiles[newX][newY], weight]
+                # Squares with diagonal edges get more weight to represent
+                # a longer distance.
+                weight = if newX is x or newY is y then 1 else 2
+                neighbours.push [tile, weight] if tile
 
             neighbours
