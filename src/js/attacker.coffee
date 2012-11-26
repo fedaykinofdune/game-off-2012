@@ -8,7 +8,7 @@ define [
 
     class Attacker extends Unit
 
-        constructor: (@position, @rotation) ->
+        constructor: (@_graph, @position, @rotation) ->
 
             super 0.2
 

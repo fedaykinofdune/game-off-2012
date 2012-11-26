@@ -10,7 +10,9 @@ define [
         @size:  16
         @color: 0xcccccc
 
-        constructor: (@position = new THREE.Vector3()) ->
+        constructor: (@_graph, @position) ->
+
+            @position ?= new THREE.Vector3()
 
             super 0
 

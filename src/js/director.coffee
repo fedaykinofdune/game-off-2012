@@ -30,3 +30,5 @@ define [
             enemy.rotation.y += Math.PI / 2
 
             @_enemies.push enemy
+
+            enemy.patrolTo @_grid.tiles[@_grid.tilesX - 1][y]

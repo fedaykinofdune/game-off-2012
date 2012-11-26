@@ -56,9 +56,9 @@ define [
             # items. A tile can have many items.
             object =
                 switch objectType
-                    when Unit.type.attacker then new Attacker position
-                    when Unit.type.enemy    then new Attacker position
-                    when Unit.type.block    then new Block position
+                    when Unit.type.attacker then new Attacker @_graph, position
+                    when Unit.type.enemy    then new Attacker @_graph, position
+                    when Unit.type.block    then new Block @_graph, position
 
             @tiles[x][y].addObject object
 
@@ -72,7 +72,7 @@ define [
 
             return unless tile
 
-            @_activePrevious.moveTo tile, @_graph
+            @_activePrevious.moveTo tile
 
         clickUnit: (vector) ->
 

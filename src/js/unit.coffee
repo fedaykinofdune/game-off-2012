@@ -24,12 +24,35 @@ define [
             @rotation ?= new THREE.Vector3()
 
             @active = false
+            @_patrolling = false
 
-        moveTo: (targetTile, graph) ->
+        stop: ->
+
+            @_patrolling = false
+            @_stopAnimation()
+
+        patrolTo: (targetTile, beforeMoveAction) ->
+
+            @_patrolling = true
+
+            currentTile = @tile
+
+            do move = =>
+
+                return unless @_patrolling
+
+                # Swap start and end tiles.
+                temp = targetTile
+                targetTile = currentTile
+                currentTile = temp
+
+                @moveTo currentTile, beforeMoveAction, -> move()
+
+        moveTo: (targetTile, beforeMoveAction, doneAction) ->
 
             return if @_speed is 0
 
-            path = graph.aStar @tile, targetTile, (vertex) ->
+            path = @_graph.aStar @tile, targetTile, (vertex) ->
 
                 Math.max Math.abs(vertex.position.x - targetTile.position.x),
                     Math.abs(vertex.position.z - targetTile.position.z)
@@ -41,7 +64,7 @@ define [
             tile = @tile
             for nextTile in path
 
-                tween = @_moveToAdjacent tile, nextTile
+                tween = @_moveToAdjacent tile, nextTile, beforeMoveAction
                 break unless tween
 
                 @_tweenQueue.enqueue tween
@@ -49,8 +72,10 @@ define [
 
             @_tweenQueue.last().onComplete =>
 
-                graph.removeVertex targetTile
+                @_graph.removeVertex targetTile
                 @_tweenQueue.clear()
+
+                doneAction?()
 
             @_tweenQueue.peek().start()
 
@@ -77,7 +102,7 @@ define [
             until @_tweenQueue.length() is 0
                 TWEEN.remove @_tweenQueue.dequeue()
 
-        _moveToAdjacent: (tile, nextTile) ->
+        _moveToAdjacent: (tile, nextTile, beforeMoveAction) ->
 
             # Check if @position is adjacent to tile.position based on
             # hexagonal movement.
@@ -94,6 +119,8 @@ define [
                 .to(nextTile.position, speed)
                 .easing(TWEEN.Easing.Linear.None)
                 .onStart( =>
+                                beforeMoveAction?()
+
                                 @mesh.lookAt nextTile.position
                                 @position.copy nextTile.position
                                 nextTile.addObject @
