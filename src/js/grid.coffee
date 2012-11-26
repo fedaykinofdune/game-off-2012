@@ -148,8 +148,8 @@ define [
 
         _vec2index: (vector) ->
 
-            x = Math.round (vector.x - @_halfTile) / @tilesX * 2
-            y = Math.round (vector.z - @_halfTile) / @tilesY * 2
+            x = Math.round (vector.x - @_halfTile) / Const.tileSize
+            y = Math.round (vector.z - @_halfTile) / Const.tileSize
 
             [x, y]
 
