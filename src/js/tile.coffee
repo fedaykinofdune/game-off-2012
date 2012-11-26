@@ -13,6 +13,10 @@ define [
             @highlighted = false
             @mesh = null
 
+        isEmpty: ->
+
+            not @unit?
+
         addObject: (@unit) ->
 
             @unit.tile = @

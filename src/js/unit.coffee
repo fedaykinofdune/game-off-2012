@@ -6,10 +6,13 @@ define [
     'lib/tween'
     'lib/stim'
     'graphics'
+    'utils'
     'constants'
 
-], (THREE, TWEEN, Stim, Graphics, Const) ->
+], (THREE, TWEEN, Stim, Graphics, Utils, Const) ->
 
+    # TODO: Use a mixin to give Attacker and other mobile units the movement
+    # related code here?
     class Unit
 
         @type:
@@ -18,7 +21,7 @@ define [
             block:    2
             flag:     3
 
-        constructor: (@_speed = 0.2) ->
+        constructor: (@speed = 0.2) ->
 
             @position ?= new THREE.Vector3()
             @rotation ?= new THREE.Vector3()
@@ -29,11 +32,14 @@ define [
         stop: ->
 
             @_patrolling = false
-            @_stopAnimation()
+            @_resetTweens()
 
         patrolTo: (targetTile) ->
 
+            # TODO: Factor these flag settings into a function. Establish
+            # notion of "unit actions".
             @_patrolling = true
+            @_following = false
 
             currentTile = @tile
 
@@ -50,36 +56,39 @@ define [
 
         follow: (unit) ->
 
-            # TODO: This is really laggy. Implement D* to handle this.
-            # do move = =>
+            # TODO: Factor these flag settings into a function. Establish
+            # notion of "unit actions".
+            @_patrolling = false
+            @_following = true
 
-            #     @stop()
-            #     @moveTo unit.tile
-            #     setTimeout move, 200
+            do follow = =>
+
+                clearInterval followingInterval unless @_following
+
+                distance = Utils.distance @tile, unit.tile
+                return if distance <= Const.tileCrossDistance
+
+                tile = @_grid.nearestEmptyTile unit.tile, @position
+
+                @stop()
+                @moveTo tile
+
+            followingInterval = setInterval follow, 100
 
         moveTo: (targetTile, beforeMoveAction, doneAction) ->
 
-            return if @_speed is 0
+            return if @speed is 0
 
             path = @_pathTo targetTile
 
             return unless path.length
 
-            @_stopAnimation()
-
-            tile = @tile
-            for nextTile in path
-
-                tween = @_moveToAdjacent tile, nextTile, beforeMoveAction
-                break unless tween
-
-                @_tweenQueue.enqueue tween
-                tile = nextTile
+            @_resetTweens()
+            @_enqueueTweens path, beforeMoveAction
 
             @_tweenQueue.last().onComplete =>
 
                 @_tweenQueue.clear()
-
                 doneAction? targetTile
 
             @_tweenQueue.peek().start()
@@ -103,15 +112,13 @@ define [
 
             @_grid.graph.aStar @tile, targetTile, (vertex) ->
 
-                # The Chebyshev distance heuristic.
-                Math.max Math.abs(vertex.position.x - targetTile.position.x),
-                    Math.abs(vertex.position.z - targetTile.position.z)
+                Utils.chebyshev vertex, targetTile
 
         _attackNearby: ->
 
             # Check nearby tiles for an opposing unit.
 
-        _stopAnimation: ->
+        _resetTweens: ->
 
             @_tweenQueue ?= new Stim.Queue()
             @_tweenQueue.peek()?.stop()
@@ -121,9 +128,20 @@ define [
             until @_tweenQueue.length() is 0
                 TWEEN.remove @_tweenQueue.dequeue()
 
+        _enqueueTweens: (path, beforeMoveAction) ->
+
+            tile = @tile
+            for nextTile in path
+
+                tween = @_makeTween tile, nextTile, beforeMoveAction
+                break unless tween
+
+                @_tweenQueue.enqueue tween
+                tile = nextTile
+
          # TODO: Consider rewriting this function. The whole system of chaining
          # tweens seems messy.
-        _moveToAdjacent: (tile, nextTile, beforeMoveAction) ->
+        _makeTween: (tile, nextTile, beforeMoveAction) ->
 
             # Check if @position is adjacent to tile.position based on
             # hexagonal movement.
@@ -133,7 +151,7 @@ define [
                 return
 
             start = tile.position.clone()
-            speed = @_distance(tile, nextTile) / @_speed
+            speed = Utils.distance(tile, nextTile) / @speed
 
             # Tween the unit position.
             new TWEEN.Tween(start)
@@ -160,7 +178,7 @@ define [
 
         _isAdjacent: (tile, nextTile) ->
 
-            distance = @_distance tile, nextTile
+            distance = Utils.distance tile, nextTile
 
             return false if distance > Const.tileCrossDistance
 
@@ -171,10 +189,3 @@ define [
 
             true
 
-        _distance: (tile1, tile2) ->
-
-            @_direction(tile1, tile2).length()
-
-        _direction: (tile1, tile2) ->
-
-            tile2.position.clone().subSelf tile1.position

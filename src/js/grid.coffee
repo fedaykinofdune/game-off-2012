@@ -87,6 +87,26 @@ define [
 
         clearTile: ->
 
+        # Checks the immediate radius around tile for an empty tile. Tiles
+        # closer to pos are prefered. If no empty tile is found, the provided
+        # tile itself is returned.
+        nearestEmptyTile: (tile, pos) ->
+
+            nearest = tile
+            distance = Infinity
+
+            @around tile, 1, (x, y, neighbour) ->
+
+                return unless neighbour.isEmpty()
+
+                tileDistance = Utils.distance neighbour, position: pos
+
+                if pos and tileDistance < distance
+                    nearest = neighbour
+                    distance = tileDistance
+
+            nearest
+
         # Tile iterator. Exposes the (x, y) position on the grid and the tile
         # itself.
         eachTile: (callback) ->
@@ -116,7 +136,9 @@ define [
                     newX = x + i
                     newY = y + j
 
-                    callback newX, newY, @tiles[newX]?[newY]
+                    continue unless @tiles[newX]?[newY]
+
+                    return if false is callback newX, newY, @tiles[newX][newY]
 
         # Sets a property on an object. The function ensures the property is
         # only ever active on one of those objects. For example, only one tile
