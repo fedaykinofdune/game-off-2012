@@ -21,28 +21,29 @@ define [
             block:    2
             flag:     3
 
-        constructor: (@speed = 0.2) ->
+        @texture:
+            active: THREE.ImageUtils.loadTexture 'src/image/active-unit.png'
+
+        constructor: (@_speed = 0.2) ->
 
             @position ?= new THREE.Vector3()
             @rotation ?= new THREE.Vector3()
 
             @active = false
-            @_patrolling = false
+            @stop()
 
         stop: ->
 
             @_patrolling = false
+            @_following = false
             @_resetTweens()
 
         patrolTo: (targetTile) ->
 
-            # TODO: Factor these flag settings into a function. Establish
-            # notion of "unit actions".
+            @stop()
             @_patrolling = true
-            @_following = false
 
             currentTile = @tile
-
             do move = =>
 
                 return unless @_patrolling
@@ -52,38 +53,42 @@ define [
                 targetTile = currentTile
                 currentTile = temp
 
-                @moveTo currentTile, @_attackNearby, -> move()
+                @_moveTo currentTile, @_attackNearby, -> move()
 
         follow: (unit) ->
 
-            # TODO: Factor these flag settings into a function. Establish
-            # notion of "unit actions".
-            @_patrolling = false
+            @stop()
             @_following = true
 
             do follow = =>
 
-                clearInterval followingInterval unless @_following
+                unless @_following
+                    clearInterval intervalID
+                    return
 
                 distance = Utils.distance @tile, unit.tile
                 return if distance <= Const.tileCrossDistance
 
                 tile = @_grid.nearestEmptyTile unit.tile, @position
 
-                @stop()
-                @moveTo tile
+                @_resetTweens()
+                @_moveTo tile
 
-            followingInterval = setInterval follow, 100
+            intervalID = setInterval follow, 100
 
         moveTo: (targetTile, beforeMoveAction, doneAction) ->
 
-            return if @speed is 0
+            @stop()
+            @_moveTo targetTile, beforeMoveAction, doneAction
+
+        _moveTo: (targetTile, beforeMoveAction, doneAction) ->
+
+            return if @_speed is 0
 
             path = @_pathTo targetTile
 
             return unless path.length
 
-            @_resetTweens()
             @_enqueueTweens path, beforeMoveAction
 
             @_tweenQueue.last().onComplete =>
@@ -98,15 +103,27 @@ define [
         update: (graphics) ->
 
             @mesh ?= @_makeMesh graphics
+            @_base?.material.visible = if @active then true else false
 
-            if @active
+        _makeMesh: (graphics, mesh) ->
 
-                @activeSprite ?= @_makeActiveSprite()
-                @_updateActiveSprite()
-            
-            else
+            @_base = Graphics.makePlane \
+                Const.tileSize * 2,
+                Const.tileSize * 2
 
-                @_hideActiveSprite()
+            @_base.material.map = Unit.texture.active
+            @_base.material.transparent = true
+            @_base.material.visible = false
+            @_base.position.y = -@position.y + 2
+
+            mesh.add @_base
+
+            mesh.position.copy @position
+            mesh.rotation.copy @rotation
+
+            graphics.scene.add mesh
+
+            mesh
 
         _pathTo: (targetTile) ->
 
@@ -151,7 +168,7 @@ define [
                 return
 
             start = tile.position.clone()
-            speed = Utils.distance(tile, nextTile) / @speed
+            speed = Utils.distance(tile, nextTile) / @_speed
 
             # Tween the unit position.
             new TWEEN.Tween(start)
@@ -160,8 +177,9 @@ define [
                 .onStart( =>
                                 beforeMoveAction?()
 
-                                @mesh.lookAt nextTile.position
-                                @position.copy nextTile.position
+                                Utils.copyPosition @position, nextTile.position
+                                @mesh.lookAt @position
+
                                 nextTile.addObject @
 
                                 # On the last movement we want to immediately
@@ -170,7 +188,7 @@ define [
                                     @_grid.graph.removeVertex nextTile
                 )
                 .onUpdate( =>
-                                @mesh.position.copy start
+                                Utils.copyPosition @mesh.position, start
                 )
                 .onComplete =>
                                 @_tweenQueue.dequeue()

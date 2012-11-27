@@ -7,33 +7,19 @@ define [
 
     class Block extends Unit
 
-        @size:  16
-        @color: 0xcccccc
-
         constructor: (@_grid, @position) ->
 
             @position ?= new THREE.Vector3()
+            @_color = 0xcccccc
+            @_height = 16
 
             super 0
 
         _makeMesh: (graphics) ->
 
             mesh = Graphics.makeCube \
-                Block.size,
-                Block.color,
+                @_height,
+                @_color,
                 @position
 
-            graphics.scene.add mesh
-
-            mesh
-
-        # TODO: Instead make the sprite part of an Object3D group in makeMesh.
-        # Then just show or hide it based on unit activity.
-        _makeActiveSprite: ->
-
-            'no sprite'
-
-        _updateActiveSprite: ->
-
-        _hideActiveSprite: ->
-
+            super graphics, mesh

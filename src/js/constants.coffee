@@ -24,7 +24,6 @@ define ->
         @debug:
             unitBodyColor:   0x7fdc50
             unitHeadColor:   0xff1100
-            activeUnitColor: 0xc9ff5b
 
             unitBodyRadius: 8
             unitHeadRadius: 2

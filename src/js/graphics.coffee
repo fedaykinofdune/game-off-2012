@@ -33,7 +33,7 @@ define [
 
             cube
 
-        @makePlane: (length, width, color, pos) ->
+        @makePlane: (length, width, color = 0xffffff, pos) ->
 
             geometry = new THREE.PlaneGeometry length, width
             material = new THREE.MeshLambertMaterial color: color
@@ -58,7 +58,7 @@ define [
 
             for column in @_grid.tiles
                 for tile in column
-                    @_updateTile tile
+                    tile.update @
 
             # @_controls.update @_clock.getDelta()
             TWEEN.update()
@@ -127,26 +127,6 @@ define [
             ###
 
             @scene.add @_camera
-
-        _updateTile: (tile) ->
-
-            if tile.highlighted
-                @_setupTileMesh tile unless tile.mesh
-                tile.mesh.visible = true
-            else
-                tile.mesh?.visible = false
-
-            tile.unit?.update @
-
-        _setupTileMesh: (tile) ->
-
-            tile.mesh = Graphics.makePlane \
-                Const.tileSize,
-                Const.tileSize,
-                0x9586DE,
-                tile.position
-
-            @scene.add tile.mesh
 
         _supportWebGL: ->
 

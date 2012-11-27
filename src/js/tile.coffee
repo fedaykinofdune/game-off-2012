@@ -3,8 +3,10 @@
 define [
 
     'unit'
+    'graphics'
+    'constants'
     
-], (Unit) ->
+], (Unit, Graphics, Const) ->
 
     class Tile
 
@@ -12,6 +14,16 @@ define [
 
             @highlighted = false
             @mesh = null
+
+        update: (graphics) ->
+
+            if @highlighted
+                @mesh ?= @_makeMesh graphics
+                @mesh.visible = true
+            else
+                @mesh?.visible = false
+
+            @unit?.update graphics
 
         isEmpty: ->
 
@@ -24,3 +36,15 @@ define [
         # Used to create a unique hash of this object. Used heavily in the
         # Graph module.
         toString: -> '' + @position.x + @position.y + @position.z
+
+        _makeMesh: (graphics) ->
+
+            mesh = Graphics.makePlane \
+                Const.tileSize,
+                Const.tileSize,
+                0x9586DE,
+                @position
+
+            graphics.scene.add mesh
+
+            mesh

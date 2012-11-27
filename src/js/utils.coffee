@@ -16,3 +16,9 @@ define ->
         @random: (min, max) ->
 
             Math.floor(Math.random() * (max - min + 1)) + min
+
+        # Copies a THREE.Vector3 but preserves the y value.
+        @copyPosition: (pos1, pos2) ->
+
+            pos1.x = pos2.x
+            pos1.z = pos2.z
