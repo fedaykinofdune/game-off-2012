@@ -2,24 +2,29 @@ define [
     
     'graphics'
     'unit'
+    'constants'
 
-], (Graphics, Unit) ->
+], (Graphics, Unit, Const) ->
 
     class Block extends Unit
+
+        @texture: THREE.ImageUtils.loadTexture "#{Const.imageDir}/block.jpg"
 
         constructor: (@_grid, @position) ->
 
             @position ?= new THREE.Vector3()
             @_color = 0xcccccc
-            @_height = 16
+            @_size = 16
 
             super 0
 
         _makeMesh: (graphics) ->
 
             mesh = Graphics.makeCube \
-                @_height,
+                @_size,
                 @_color,
                 @position
+
+            mesh.material.map = Block.texture
 
             super graphics, mesh

@@ -16,7 +16,7 @@ define [
         constructor: (@_container, @_grid) ->
 
             @_setupScene()
-            @_setupAxis()
+            # @_setupAxis()
             @_grid.update @
 
             @_projector = new THREE.Projector()
@@ -94,6 +94,10 @@ define [
             light1 = new THREE.PointLight 0xffffff
             light1.position.set 500, 500, 500
             @scene.add light1
+
+            light2 = new THREE.PointLight 0xffffff
+            light2.position.set -500, 500, -500
+            @scene.add light2
 
             @_renderer =
                 if @_supportWebGL()

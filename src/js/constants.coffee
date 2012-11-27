@@ -5,6 +5,8 @@ define ->
     # and keys constants can go to the Game class.
     class Constants
 
+        @imageDir: 'src/image'
+
         @tileSize: 16
         @tileCrossDistance: Math.sqrt @tileSize * @tileSize * 3
 

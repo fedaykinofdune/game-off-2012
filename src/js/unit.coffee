@@ -22,7 +22,8 @@ define [
             flag:     3
 
         @texture:
-            active: THREE.ImageUtils.loadTexture 'src/image/active-unit.png'
+            active: THREE.ImageUtils.loadTexture \
+                "#{Const.imageDir}/active-unit.png"
 
         constructor: (@_speed = 0.2) ->
 

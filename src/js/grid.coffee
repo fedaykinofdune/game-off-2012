@@ -16,6 +16,8 @@ define [
 
     class Grid
 
+        @texture: THREE.ImageUtils.loadTexture "#{Const.imageDir}/grass.jpg"
+
         constructor: (@tilesX = 32, @tilesY = 32) ->
 
             @_centerX = Math.floor @tilesX / 2
@@ -41,6 +43,14 @@ define [
                 @tilesY * Const.tileSize,
                 0xa5c9f3,
                 @position
+
+            # TODO: Repeat the texture in relation to grid size.
+            Grid.texture.wrapS = THREE.RepeatWrapping
+            Grid.texture.wrapT = THREE.RepeatWrapping
+            Grid.texture.repeat.x = 4
+            Grid.texture.repeat.y = 4
+
+            @mesh.material.map = Grid.texture
             
             graphics.scene.add @mesh
 
