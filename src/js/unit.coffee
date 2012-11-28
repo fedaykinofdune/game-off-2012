@@ -80,7 +80,7 @@ define [
         moveTo: (targetTile, beforeMoveAction, doneAction) ->
 
             @stop()
-            @_moveTo targetTile, beforeMoveAction, doneAction
+            @_moveTo arguments...
 
         _moveTo: (targetTile, beforeMoveAction, doneAction) ->
 
@@ -182,6 +182,7 @@ define [
                                 @mesh.lookAt @position
 
                                 nextTile.addObject @
+                                tile.unit = null
 
                                 # On the last movement we want to immediately
                                 # occupy the square.

@@ -16,6 +16,8 @@ define [
 
     class Grid
 
+        # TODO: Make these textures object members. I Doubt there's a
+        # performance boost by making it a class member.
         @texture: THREE.ImageUtils.loadTexture "#{Const.imageDir}/grass.jpg"
 
         constructor: (@tilesX = 32, @tilesY = 32) ->

@@ -7,6 +7,10 @@ define ->
 
         @imageDir: 'src/image'
 
+        # TODO: This is temporarily used for deploying to mhluska.com until I
+        # fix my server issues.
+        # @imageDir: '/static/demo/feathers/image'
+
         @tileSize: 16
         @tileCrossDistance: Math.sqrt @tileSize * @tileSize * 3
 
