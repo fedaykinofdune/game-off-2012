@@ -7,12 +7,13 @@ define [
     'graphics'
     'unit'
     'attacker'
+    'enemy'
     'block'
     'tile'
     'utils'
     'constants'
     
-], (THREE, Stim, Graphics, Unit, Attacker, Block, Tile, Utils, Const) ->
+], (THREE, Stim, Graphics, Unit, Attacker, Enemy, Block, Tile, Utils, Const) ->
 
     class Grid
 
@@ -70,7 +71,7 @@ define [
             object =
                 switch objectType
                     when Unit.type.attacker then new Attacker @, position
-                    when Unit.type.enemy    then new Attacker @, position
+                    when Unit.type.enemy    then new Enemy @, position
                     when Unit.type.block    then new Block @, position
 
             @tiles[x][y].addObject object

@@ -45,6 +45,9 @@ define [
                 0x9586DE,
                 @position
 
+            mesh.material.transparent = true
+            mesh.material.opacity = 0.6
+
             graphics.scene.add mesh
 
             mesh

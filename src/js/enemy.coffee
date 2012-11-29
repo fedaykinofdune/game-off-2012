@@ -6,7 +6,7 @@ define [
     
 ], (Graphics, Unit, Const) ->
 
-    class Attacker extends Unit
+    class Enemy extends Unit
 
         constructor: (@_grid, @position, @rotation) ->
 
@@ -14,4 +14,4 @@ define [
 
         _makeMesh: (graphics) ->
 
-            super graphics, Graphics.makeDebugMesh Const.debug.unitBodyColor
+            super graphics, Graphics.makeDebugMesh Const.debug.enemyBodyColor

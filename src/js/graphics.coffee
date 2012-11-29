@@ -24,6 +24,28 @@ define [
 
             @_camera.lookAt @_grid.mesh.position
 
+        @makeDebugMesh: (color) ->
+
+            body = Graphics.makeSphere \
+                Const.debug.unitBodyRadius,
+                color
+
+            headOffset = new THREE.Vector3 \
+                0,
+                0,
+                Const.debug.unitBodyRadius + Const.debug.unitHeadRadius
+
+            head = Graphics.makeSphere \
+                Const.debug.unitHeadRadius,
+                Const.debug.unitHeadColor,
+                headOffset
+
+            mesh = new THREE.Object3D()
+            mesh.add body
+            mesh.add head
+
+            mesh
+
         @makeCube: (size, color, pos) ->
 
             geometry = new THREE.CubeGeometry size, size, size

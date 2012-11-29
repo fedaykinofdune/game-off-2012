@@ -5,11 +5,13 @@ define ->
     # and keys constants can go to the Game class.
     class Constants
 
-        @imageDir: 'src/image'
-
         # TODO: This is temporarily used for deploying to mhluska.com until I
         # fix my server issues.
         # @imageDir: '/static/demo/feathers/image'
+        # @modelDir: '/static/demo/feathers/model'
+
+        @imageDir: 'src/image'
+        @modelDir: 'src/model'
 
         @tileSize: 16
         @tileCrossDistance: Math.sqrt @tileSize * @tileSize * 3
@@ -28,9 +30,10 @@ define ->
         # These constants are used in development and debugging. They will go
         # away in the final release.
         @debug:
+            enemyBodyColor:  0x5cb92e
             unitBodyColor:   0x7fdc50
             unitHeadColor:   0xff1100
 
-            unitBodyRadius: 8
-            unitHeadRadius: 2
+            unitBodyRadius:  8
+            unitHeadRadius:  2
 
