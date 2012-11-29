@@ -1,10 +1,8 @@
 Goose Rampage
 =============
 
-#### 3D real-time strategy survival game ####
+#### [Three.js](https://github.com/mrdoob/three.js/)-based RTS survival game. ####
 Build obstacles and fend off diamond-hungry geese.
-
-Built on [Three.js](https://github.com/mrdoob/three.js/).
 
 ![Screenshot](http://i.imgur.com/DYI0E.png "Screenshot")
 
