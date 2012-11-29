@@ -172,6 +172,17 @@ define [
             start = @mesh.position.clone()
             speed = Utils.distance(@mesh.position, nextTile.position) / @_speed
 
+            # Find an alternate path if the next tile suddenly becomes blocked.
+            # TODO: This is temporary code. We need to get rid of these
+            # recusrive _moveAlongPath calls and think of something more
+            # modular and cleaner.
+            unless nextTile.isEmpty()
+                @path = path = @_pathTo path.pop()
+                # TODO: Sometimes we get a zero-length path here when in
+                # reality we should get a best effort path. Fix that.
+                return unless path.length
+                nextTile = path[0]
+
             @_moveTween = new TWEEN.Tween(start)
                 .to(nextTile.position, speed)
                 .easing(TWEEN.Easing.Linear.None)
