@@ -4,6 +4,10 @@ Goose Rampage
 #### 3D real-time strategy survival game ####
 Build obstacles and fend off diamond-hungry geese.
 
+Built on [Three.js](https://github.com/mrdoob/three.js/).
+
+![Screenshot](http://i.imgur.com/DYI0E.png "Screenshot")
+
 You will need the following packages before building:
 * [RubyGems](https://github.com/rubygems/rubygems)
 * [Bundler](https://github.com/carlhuda/bundler)
