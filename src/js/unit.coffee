@@ -4,22 +4,27 @@ define [
     
     'lib/three'
     'lib/tween'
-    'lib/stim'
     'graphics'
     'utils'
     'constants'
 
-], (THREE, TWEEN, Stim, Graphics, Utils, Const) ->
+], (THREE, TWEEN, Graphics, Utils, Const) ->
 
     # TODO: Use a mixin to give Attacker and other mobile units the movement
     # related code here?
     class Unit
 
+        @mode:
+            patrolling: 0
+            following:  1
+            seeking:    2
+            idle:       3
+
         @type:
-            attacker: 0
-            enemy:    1
-            block:    2
-            flag:     3
+            attacker:   0
+            enemy:      1
+            block:      2
+            flag:       3
 
         @texture:
             active: THREE.ImageUtils.loadTexture \
@@ -29,82 +34,174 @@ define [
 
             @position ?= new THREE.Vector3()
             @rotation ?= new THREE.Vector3()
-
             @active = false
+
+            @_readyAction = null
+
             @stop()
+
+        ready: (action) ->
+
+            if @mesh
+                action()
+            else
+                @_readyAction = action
 
         stop: ->
 
-            @_patrolling = false
-            @_following = false
-            @_resetTweens()
+            @path = null
+            @targetTile = null
+            @_moving = false
+            @_setMode Unit.mode.idle
+
+        update: (graphics) ->
+
+            unless @mesh
+                @mesh = @_makeMesh graphics
+                @_readyAction?()
+
+            @_base?.material.visible = if @active then true else false
 
         patrolTo: (targetTile) ->
 
-            @stop()
-            @_patrolling = true
+            @_setMode Unit.mode.patrolling
 
             currentTile = @tile
             do move = =>
 
-                return unless @_patrolling
+                return unless @_mode is Unit.mode.patrolling
 
                 # Swap start and end tiles.
                 temp = targetTile
                 targetTile = currentTile
                 currentTile = temp
 
-                @_moveTo currentTile, @_attackNearby, -> move()
+                @_moveTo currentTile,
+
+                    beforeTween: @_attackNearby,
+                    done: =>
+                        @_moveTween = null
+                        move()
 
         follow: (unit) ->
 
-            @stop()
-            @_following = true
+            @_setMode Unit.mode.following
+
+            intervalID = null
 
             do follow = =>
 
-                unless @_following
+                unless @_mode is Unit.mode.following
+                    return clearInterval intervalID
+
+                distance = Utils.tileDistance @tile, unit.tile
+                tiles = distance / Const.tileCrossDistance
+
+                if tiles > 4
+
+                    @_moveTo @_grid.nearestEmptyTile unit.tile, @position
+
+                else if tiles > 1
+
+                    return unless unit.path
+                    return if unit.path[0] is unit.tile
+
+                    # If we're close enough to the unit, just jump on his
+                    # current path. But start at a tile only a few away from
+                    # his current one to prevent going on a wild breadcrumb
+                    # trail.
+                    pathIndex = unit.path?.indexOf(unit.tile)
+                    pathIndex = Math.max 0, pathIndex - 3
+                    path = unit.path.slice pathIndex
+                    path.pop()
+
+                    return unless path.length
+
                     clearInterval intervalID
-                    return
+                    target = unit.targetTile
+                    @_moveTween?.stop()
 
-                distance = Utils.distance @tile, unit.tile
-                return if distance <= Const.tileCrossDistance
+                    @_moveAlongPath path,
 
-                tile = @_grid.nearestEmptyTile unit.tile, @position
+                        beforeTween: =>
 
-                @_resetTweens()
-                @_moveTo tile
+                            # As we follow along, check if the other unit makes
+                            # any sudden path changes. Notice that stopping
+                            # triggers the done action of this _moveAlongPath
+                            # call, setting us back into normal follow mode.
+                            @stop() if unit.targetTile isnt target
 
-            intervalID = setInterval follow, 100
+                        done: =>
 
-        moveTo: (targetTile, beforeMoveAction, doneAction) ->
+                            @_setMode Unit.mode.following
+                            # TODO: Get this to work. There are synchronization
+                            # issues if there is an immediate follow after a
+                            # path change. If all fails fix it by allowing
+                            # multiple units in a tile?
+                            # follow()
+                            intervalID = setInterval follow, 500
 
-            @stop()
-            @_moveTo arguments...
+            intervalID = setInterval follow, 500
 
-        _moveTo: (targetTile, beforeMoveAction, doneAction) ->
+        # Wrapper for _moveTo used by external modules. Functions like
+        # Unit.follow and Unit.patrolTo rely on _moveTo because it doesn't
+        # reset unit state.
+        moveTo: (targetTile, actions) ->
+
+            @_setMode Unit.mode.seeking
+            @_moveTween?.stop()
+            @_moveTo targetTile, actions
+
+        _moveTo: (targetTile, actions) ->
 
             return if @_speed is 0
+            return if targetTile is @targetTile
 
-            path = @_pathTo targetTile
+            @path = @_pathTo targetTile
 
-            return unless path.length
+            return unless @path.length
 
-            @_enqueueTweens path, beforeMoveAction
+            @targetTile = targetTile
+            @_moveTween?.stop()
+            @_moveAlongPath @path, actions
 
-            @_tweenQueue.last().onComplete =>
+        _moveAlongPath: (path, actions = {}) ->
 
-                @_tweenQueue.clear()
-                doneAction? targetTile
+            return actions.done?() unless (path.length and @_moving)
 
-            @_tweenQueue.peek().start()
+            nextTile = path[0]
+            start = @mesh.position.clone()
+            speed = Utils.distance(@mesh.position, nextTile.position) / @_speed
 
-            path
+            @_moveTween = new TWEEN.Tween(start)
+                .to(nextTile.position, speed)
+                .easing(TWEEN.Easing.Linear.None)
 
-        update: (graphics) ->
+            @_moveTween.onStart =>
 
-            @mesh ?= @_makeMesh graphics
-            @_base?.material.visible = if @active then true else false
+                actions.beforeTween?()
+
+                Utils.translate @position, nextTile.position
+                @mesh.lookAt @position
+
+                # On the last movement we want to immediately occupy the
+                # square.
+                @_grid.graph.removeVertex nextTile unless path[1]
+
+            @_moveTween.onUpdate =>
+
+                Utils.translate @mesh.position, start
+
+            @_moveTween.onComplete =>
+                
+                nextTile.addObject @
+                @_moveAlongPath path.slice(1), actions
+
+            @_moveTween.start()
+
+        _setMode: (@_mode) ->
+
+            @_moving = if @_mode is Unit.mode.idle then false else true
 
         _makeMesh: (graphics, mesh) ->
 
@@ -130,75 +227,15 @@ define [
 
             @_grid.graph.aStar @tile, targetTile, (vertex) ->
 
-                Utils.chebyshev vertex, targetTile
+                Utils.tileChebyshev vertex, targetTile
 
         _attackNearby: ->
 
             # Check nearby tiles for an opposing unit.
-
-        _resetTweens: ->
-
-            @_tweenQueue ?= new Stim.Queue()
-            @_tweenQueue.peek()?.stop()
-
-            # TODO: This is inefficient because TWEEN.remove runs in linear
-            # time. Fix this if it becomes a bottleneck.
-            until @_tweenQueue.length() is 0
-                TWEEN.remove @_tweenQueue.dequeue()
-
-        _enqueueTweens: (path, beforeMoveAction) ->
-
-            tile = @tile
-            for nextTile in path
-
-                tween = @_makeTween tile, nextTile, beforeMoveAction
-                break unless tween
-
-                @_tweenQueue.enqueue tween
-                tile = nextTile
-
-         # TODO: Consider rewriting this function. The whole system of chaining
-         # tweens seems messy.
-        _makeTween: (tile, nextTile, beforeMoveAction) ->
-
-            # Check if @position is adjacent to tile.position based on
-            # hexagonal movement.
-            unless @_isAdjacent tile, nextTile
-
-                console.warn 'Shortest path algorithm gave non-adjacent tile.'
-                return
-
-            start = tile.position.clone()
-            speed = Utils.distance(tile, nextTile) / @_speed
-
-            # Tween the unit position.
-            new TWEEN.Tween(start)
-                .to(nextTile.position, speed)
-                .easing(TWEEN.Easing.Linear.None)
-                .onStart( =>
-                                beforeMoveAction?()
-
-                                Utils.copyPosition @position, nextTile.position
-                                @mesh.lookAt @position
-
-                                nextTile.addObject @
-                                tile.unit = null
-
-                                # On the last movement we want to immediately
-                                # occupy the square.
-                                if @_tweenQueue.length() is 1
-                                    @_grid.graph.removeVertex nextTile
-                )
-                .onUpdate( =>
-                                Utils.copyPosition @mesh.position, start
-                )
-                .onComplete =>
-                                @_tweenQueue.dequeue()
-                                @_tweenQueue.peek().start()
-
+            
         _isAdjacent: (tile, nextTile) ->
 
-            distance = Utils.distance tile, nextTile
+            distance = Utils.tileDistance tile, nextTile
 
             return false if distance > Const.tileCrossDistance
 

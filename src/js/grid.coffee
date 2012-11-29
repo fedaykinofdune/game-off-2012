@@ -111,7 +111,7 @@ define [
 
                 return unless neighbour.isEmpty()
 
-                tileDistance = Utils.distance neighbour, position: pos
+                tileDistance = Utils.distance neighbour.position, pos
 
                 if pos and tileDistance < distance
                     nearest = neighbour

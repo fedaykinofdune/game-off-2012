@@ -4,21 +4,29 @@ define ->
 
     class Utils
 
-        @distance: (tile1, tile2) ->
+        @tileDistance: (tile1, tile2) ->
 
-            tile2.position.clone().subSelf(tile1.position).length()
+            @distance tile1.position, tile2.position
 
-        @chebyshev: (tile1, tile2) ->
+        @distance: (position1, position2) ->
 
-            Math.max Math.abs(tile1.position.x - tile2.position.x),
-                Math.abs(tile1.position.z - tile2.position.z)
+            position2.clone().subSelf(position1).length()
+
+        @tileChebyshev: (tile1, tile2) ->
+
+            @chebyshev tile1.position, tile2.position
+
+        @chebyshev: (position1, position2) ->
+
+            Math.max Math.abs(position1.x - position2.x),
+                Math.abs(position1.z - position2.z)
 
         @random: (min, max) ->
 
             Math.floor(Math.random() * (max - min + 1)) + min
 
         # Copies a THREE.Vector3 but preserves the y value.
-        @copyPosition: (pos1, pos2) ->
+        @translate: (pos1, pos2) ->
 
             pos1.x = pos2.x
             pos1.z = pos2.z
