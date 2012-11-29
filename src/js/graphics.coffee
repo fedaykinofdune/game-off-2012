@@ -140,7 +140,7 @@ define [
         _setupCamera: (ratio) ->
 
             @_camera = new THREE.PerspectiveCamera 75, ratio, 50, 10000
-            @_camera.position.set 600, 350, 200
+            @_camera.position.set @_grid.width + 50, 250, @_grid.height / 2
 
             # TODO: The controls are temporary for debugging.
             ###

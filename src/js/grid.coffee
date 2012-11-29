@@ -21,7 +21,10 @@ define [
         # performance boost by making it a class member.
         @texture: THREE.ImageUtils.loadTexture "#{Const.imageDir}/grass.jpg"
 
-        constructor: (@tilesX = 32, @tilesY = 32) ->
+        constructor: (@tilesX = 24, @tilesY = 24) ->
+
+            @width = @tilesX * Const.tileSize
+            @height = @tilesY * Const.tileSize
 
             @_centerX = Math.floor @tilesX / 2
             @_centerY = Math.floor @tilesY / 2

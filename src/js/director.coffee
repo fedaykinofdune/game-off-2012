@@ -35,6 +35,7 @@ define [
             # functions.
             enemy.ready =>
                 enemy.patrolTo @_grid.tiles[@_grid.tilesX - 1][y]
+                # enemy.follow @_grid.player
 
             if @_enemies.length is @_maxEnemies
                 @_enemies[0].follow @_grid.player
