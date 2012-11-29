@@ -26,6 +26,7 @@ define ->
             rightArrow:  39
             downArrow:   40
             leftArrow:   37
+            B:           66
 
         # These constants are used in development and debugging. They will go
         # away in the final release.

@@ -78,6 +78,16 @@ define [
 
             object
 
+        putBlock: (vector) ->
+
+            return unless vector
+
+            [x, y] = @_vec2index vector
+
+            return unless @tiles[x][y].isEmpty()
+
+            @addObject x, y, Unit.type.block
+
         moveUnit: (vector) ->
 
             return unless @_activePrevious?.active

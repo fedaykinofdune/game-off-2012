@@ -29,6 +29,8 @@ requirejs [
 
             @_offset = $(container).offset()
             @_keyStates = {}
+            @_lastMousPos = null
+
             @_setupEvents()
 
         run: ->
@@ -40,6 +42,15 @@ requirejs [
 
             $(window).keydown (event) => @_setKeyState event.which, true
             $(window).keyup (event) => @_setKeyState event.which, false
+
+            $(window).keydown (event) =>
+
+                switch event.which
+
+                    when Const.keys.B
+
+                        return unless @_lastMousePos
+                        @_grid.putBlock @_graphics.mouse2vec @_lastMousePos...
 
             # Disables browser popup on right click.
             $(container).bind 'contextmenu', (event) -> event.preventDefault()
@@ -55,7 +66,9 @@ requirejs [
 
             $(container).mousemove (event) =>
 
-                intersection = @_graphics.mouse2vec @_getMousePos(event)...
+                @_lastMousePos = @_getMousePos event
+
+                intersection = @_graphics.mouse2vec @_lastMousePos...
                 unless intersection
                     @_grid.clearTile()
                     return
