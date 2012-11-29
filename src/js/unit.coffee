@@ -149,7 +149,6 @@ define [
         moveTo: (targetTile, actions) ->
 
             @_setMode Unit.mode.seeking
-            @_moveTween?.stop()
             @_moveTo targetTile, actions
 
         _moveTo: (targetTile, actions) ->
@@ -194,6 +193,7 @@ define [
 
             @_moveTween.onComplete =>
                 
+                @tile.unit = null
                 nextTile.addObject @
                 @_moveAlongPath path.slice(1), actions
 
