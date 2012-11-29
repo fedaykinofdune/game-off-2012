@@ -7,7 +7,7 @@ Build obstacles and fend off diamond-hungry geese.
 
 Made with [Three.js](https://github.com/mrdoob/three.js/).
 
-![Screenshot](http://i.imgur.com/DYI0E.png "Screenshot")
+![Screenshot](http://i.imgur.com/7A7cU.png "Screenshot")
 
 You will need the following packages before building:
 * [RubyGems](https://github.com/rubygems/rubygems)
